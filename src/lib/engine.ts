@@ -8,7 +8,21 @@ export type Dist = "normal" | "lognormal" | "t";
 export type SeMethod = "binomial" | "delta";
 export type Pooling = "fixed" | "random";
 export type CiType = "wald" | "logit";
+export type CiMethod = "wald" | "hksj";
+export type Control = "matched" | "median";
 export type Method = "individual" | "weighted" | "unweighted" | "median" | "smd";
+
+// Smallest distance a responder probability may sit from 0 or 1 when it feeds a
+// log, a logit or an inverse-variance weight. Mirrors RESP_EPS in the R package.
+const RESP_EPS = 1e-10;
+const clampP = (p: number) => Math.min(Math.max(p, RESP_EPS), 1 - RESP_EPS);
+
+// True when every experimental and control responder probability is pinned to
+// the same bound (all ~0 or all ~1). The risk difference is then well defined
+// but the ratio measures are clamp artifacts and are reported as null.
+const isBoundary = (pe: number[], pc: number[]) =>
+  (pe.every((p) => p <= RESP_EPS) && pc.every((p) => p <= RESP_EPS)) ||
+  (pe.every((p) => p >= 1 - RESP_EPS) && pc.every((p) => p >= 1 - RESP_EPS));
 
 export interface StudyRow {
   study: string;
@@ -26,10 +40,12 @@ export interface AnalysisOptions {
   method?: Method[];
   se_method?: SeMethod;
   pooling?: Pooling;
+  control?: Control;
   dist?: Dist;
   df?: number | null;
   mid_sd?: number;
   ci_type?: CiType;
+  ci_method?: CiMethod;
   conf_level?: number;
 }
 
@@ -42,13 +58,13 @@ export interface ResultRow {
   rd: number;
   rd_lb: number | null;
   rd_ub: number | null;
-  rr: number;
+  rr: number | null;
   rr_lb: number | null;
   rr_ub: number | null;
-  or: number;
+  or: number | null;
   or_lb: number | null;
   or_ub: number | null;
-  nnt: number;
+  nnt: number | null;
   nnt_lb: number | null;
   nnt_ub: number | null;
   var_rd: number | null;
@@ -151,11 +167,12 @@ interface Pool {
   qP: number | null;
   ciLb: number;
   ciUb: number;
+  se: number; // the SE actually used for the random-effects interval
   piLb: number | null;
   piUb: number | null;
 }
 
-function dlPool(y: number[], v: number[], conf: number): Pool {
+function dlPool(y: number[], v: number[], conf: number, ciMethod: CiMethod = "wald"): Pool {
   const k = y.length;
   const wf = v.map((x) => 1 / x);
   const sw = sum(wf);
@@ -165,7 +182,8 @@ function dlPool(y: number[], v: number[], conf: number): Pool {
   if (k < 2) {
     return {
       k, fixed, fixedVar, est: fixed, var: fixedVar, tau2: 0, i2: null, q: null, qP: null,
-      ciLb: fixed - z * Math.sqrt(fixedVar), ciUb: fixed + z * Math.sqrt(fixedVar), piLb: null, piUb: null,
+      ciLb: fixed - z * Math.sqrt(fixedVar), ciUb: fixed + z * Math.sqrt(fixedVar),
+      se: Math.sqrt(fixedVar), piLb: null, piUb: null,
     };
   }
   const q = sum(y.map((e, i) => wf[i] * (e - fixed) ** 2));
@@ -176,6 +194,19 @@ function dlPool(y: number[], v: number[], conf: number): Pool {
   const swr = sum(wr);
   const est = sum(y.map((e, i) => wr[i] * e)) / swr;
   const variance = 1 / swr;
+
+  let se: number;
+  let crit: number;
+  if (ciMethod === "hksj") {
+    // Hartung-Knapp-Sidik-Jonkman: a t-interval with a quadratic-form variance.
+    const qHk = sum(y.map((e, i) => wr[i] * (e - est) ** 2)) / ((k - 1) * swr);
+    se = Math.sqrt(qHk);
+    crit = qt((1 + conf) / 2, k - 1);
+  } else {
+    se = Math.sqrt(variance);
+    crit = z;
+  }
+
   let piLb: number | null = null;
   let piUb: number | null = null;
   if (k > 2) {
@@ -185,7 +216,7 @@ function dlPool(y: number[], v: number[], conf: number): Pool {
   }
   return {
     k, fixed, fixedVar, est, var: variance, tau2, i2, q, qP: 1 - pchisq(q, k - 1),
-    ciLb: est - z * Math.sqrt(variance), ciUb: est + z * Math.sqrt(variance), piLb, piUb,
+    ciLb: est - crit * se, ciUb: est + crit * se, se, piLb, piUb,
   };
 }
 
@@ -231,9 +262,9 @@ function nntFromRd(rd: number, rdLb: number | null, rdUb: number | null) {
 
 interface Measures {
   rd: number; rd_lb: number | null; rd_ub: number | null;
-  rr: number; rr_lb: number | null; rr_ub: number | null;
-  or: number; or_lb: number | null; or_ub: number | null;
-  nnt: number; nnt_lb: number | null; nnt_ub: number | null;
+  rr: number | null; rr_lb: number | null; rr_ub: number | null;
+  or: number | null; or_lb: number | null; or_ub: number | null;
+  nnt: number | null; nnt_lb: number | null; nnt_ub: number | null;
 }
 
 function effectMeasures(
@@ -242,30 +273,38 @@ function effectMeasures(
 ): Measures {
   const z = qnorm((1 + conf) / 2);
   const rd = pe - pc;
-  const rr = pe / pc;
-  const or = (pe / (1 - pe)) / (pc / (1 - pc));
+  const pec = clampP(pe), pcc = clampP(pc);
+  const rr = pec / pcc;
+  const or = (pec / (1 - pec)) / (pcc / (1 - pcc));
   const hasVar = !Number.isNaN(varPe) && !Number.isNaN(varPc);
   let rdLb: number | null = null, rdUb: number | null = null;
   let rrLb: number | null = null, rrUb: number | null = null;
   let orLb: number | null = null, orUb: number | null = null;
   if (hasVar) {
     if (ciType === "logit" && extraRd === 0) {
-      const ciE = propCi(pe, varPe, conf, "logit");
-      const ciC = propCi(pc, varPc, conf, "logit");
+      const ciE = propCi(pec, varPe, conf, "logit");
+      const ciC = propCi(pcc, varPc, conf, "logit");
       [rdLb, rdUb] = moverRd(pe, pc, ciE, ciC);
     } else {
       const seRd = Math.sqrt(varPe + varPc + extraRd);
       rdLb = rd - z * seRd;
       rdUb = rd + z * seRd;
     }
-    const seLnrr = Math.sqrt(varPe / pe ** 2 + varPc / pc ** 2 + extraLnrr);
+    const seLnrr = Math.sqrt(varPe / pec ** 2 + varPc / pcc ** 2 + extraLnrr);
     rrLb = rr * Math.exp(-z * seLnrr);
     rrUb = rr * Math.exp(z * seLnrr);
-    const seLnor = Math.sqrt(varPe / (pe * (1 - pe)) ** 2 + varPc / (pc * (1 - pc)) ** 2 + extraLnor);
+    const seLnor = Math.sqrt(varPe / (pec * (1 - pec)) ** 2 + varPc / (pcc * (1 - pcc)) ** 2 + extraLnor);
     orLb = or * Math.exp(-z * seLnor);
     orUb = or * Math.exp(z * seLnor);
   }
   const nnt = nntFromRd(rd, rdLb, rdUb);
+  if (isBoundary([pe], [pc])) {
+    return {
+      rd, rd_lb: rdLb, rd_ub: rdUb,
+      rr: null, rr_lb: null, rr_ub: null, or: null, or_lb: null, or_ub: null,
+      nnt: null, nnt_lb: null, nnt_ub: null,
+    };
+  }
   return {
     rd, rd_lb: rdLb, rd_ub: rdUb, rr, rr_lb: rrLb, rr_ub: rrUb, or, or_lb: orLb, or_ub: orUb,
     nnt: nnt.nnt, nnt_lb: nnt.nntLb, nnt_ub: nnt.nntUb,
@@ -296,17 +335,20 @@ function perStudyStats(
     const ie = probInfo(d.change_e, d.sd_e, d.n_e, mid, direction, dist, df);
     const ic = probInfo(d.change_c, d.sd_c, d.n_c, mid, direction, dist, df);
     const pe = ie.p, pc = ic.p;
-    const varPe = seMethod === "binomial" ? (pe * (1 - pe)) / d.n_e : ie.varSampling;
-    const varPc = seMethod === "binomial" ? (pc * (1 - pc)) / d.n_c : ic.varSampling;
+    // Clamp the probabilities that feed logs, logits and weights; report pe, pc
+    // and the risk difference unclamped.
+    const pec = clampP(pe), pcc = clampP(pc);
+    const varPe = seMethod === "binomial" ? (pec * (1 - pec)) / d.n_e : ie.varSampling;
+    const varPc = seMethod === "binomial" ? (pcc * (1 - pcc)) / d.n_c : ic.varSampling;
     const dRd = (ie.dpDmid - ic.dpDmid) ** 2 * midVar;
-    const dLnrr = (ie.dpDmid / pe - ic.dpDmid / pc) ** 2 * midVar;
-    const dLnor = (ie.dpDmid / (pe * (1 - pe)) - ic.dpDmid / (pc * (1 - pc))) ** 2 * midVar;
+    const dLnrr = (ie.dpDmid / pec - ic.dpDmid / pcc) ** 2 * midVar;
+    const dLnor = (ie.dpDmid / (pec * (1 - pec)) - ic.dpDmid / (pcc * (1 - pcc))) ** 2 * midVar;
     return {
       study: d.study, p_e: pe, p_c: pc, var_pe: varPe, var_pc: varPc,
       rd: pe - pc, var_rd: varPe + varPc + dRd, se: 0, ci_lb: 0, ci_ub: 0,
-      lnrr: Math.log(pe / pc), var_lnrr: varPe / pe ** 2 + varPc / pc ** 2 + dLnrr,
-      lnor: qlogis(pe) - qlogis(pc),
-      var_lnor: varPe / (pe * (1 - pe)) ** 2 + varPc / (pc * (1 - pc)) ** 2 + dLnor,
+      lnrr: Math.log(pec / pcc), var_lnrr: varPe / pec ** 2 + varPc / pcc ** 2 + dLnrr,
+      lnor: qlogis(pec) - qlogis(pcc),
+      var_lnor: varPe / (pec * (1 - pec)) ** 2 + varPc / (pcc * (1 - pcc)) ** 2 + dLnor,
     };
   });
 }
@@ -333,11 +375,19 @@ export function responderAnalysis(data: StudyRow[], o: AnalysisOptions): ResultR
   const df = opt(o.df, null);
   const midSd = opt(o.mid_sd, 0);
   const ciType = opt(o.ci_type, "wald");
+  const ciMethod = opt(o.ci_method, "wald");
   const conf = opt(o.conf_level, 0.95);
+  const control = opt(o.control, "matched");
   const methodOpt = opt(o.method, ["individual", "weighted", "unweighted", "median"] as Method[]);
   const methods = Array.isArray(methodOpt) ? methodOpt : [methodOpt];
   const k = data.length;
   const z = qnorm((1 + conf) / 2);
+
+  if (dist === "lognormal" && (data.some((d) => d.change_e <= 0 || d.change_c <= 0) || o.mid <= 0)) {
+    throw new Error(
+      "The lognormal model requires every study-arm mean change and the MID to be positive.",
+    );
+  }
 
   const change_e = data.map((d) => d.change_e);
   const sd_e = data.map((d) => d.sd_e);
@@ -359,18 +409,28 @@ export function responderAnalysis(data: StudyRow[], o: AnalysisOptions): ResultR
   });
 
   const summaryMethod = (mth: "median" | "unweighted" | "weighted"): ResultRow => {
+    // Baseline-risk rule: "matched" pools the control arm like the experimental
+    // arm; "median" always takes the control from the median control arm (the
+    // Sofi-Mahmudi 2024 baseline), which has no variance model so it yields
+    // point estimates only.
+    const controlM = control === "median" ? "median" : mth;
     const ae = armSummary(change_e, sd_e, n_e, mth);
-    const ac = armSummary(change_c, sd_c, n_c, mth);
+    const ac = armSummary(change_c, sd_c, n_c, controlM);
     const ie = probInfo(ae.mu, ae.sigma, 2, o.mid, direction, dist, df);
     const ic = probInfo(ac.mu, ac.sigma, 2, o.mid, direction, dist, df);
     const pe = ie.p, pc = ic.p;
     if (mth === "weighted") {
-      const varPe = ie.dpDmu ** 2 * ae.varMu;
-      const varPc = ic.dpDmu ** 2 * ac.varMu;
+      // Full delta variance: propagate uncertainty in both the pooled mean and
+      // the pooled SD. Var(sigma) ~= sigma^2 / (2 * df_total).
+      const varSigmaE = (ae.sigma * ae.sigma) / (2 * sum(n_e.map((n) => n - 1)));
+      const varSigmaC = (ac.sigma * ac.sigma) / (2 * sum(n_c.map((n) => n - 1)));
+      const varPe = ie.dpDmu ** 2 * ae.varMu + ie.dpDsigma ** 2 * varSigmaE;
+      const varPc = ic.dpDmu ** 2 * ac.varMu + ic.dpDsigma ** 2 * varSigmaC;
+      const pec = clampP(pe), pcc = clampP(pc);
       const mv = midSd * midSd;
       const extraRd = (ie.dpDmid - ic.dpDmid) ** 2 * mv;
-      const extraLnrr = (ie.dpDmid / pe - ic.dpDmid / pc) ** 2 * mv;
-      const extraLnor = (ie.dpDmid / (pe * (1 - pe)) - ic.dpDmid / (pc * (1 - pc))) ** 2 * mv;
+      const extraLnrr = (ie.dpDmid / pec - ic.dpDmid / pcc) ** 2 * mv;
+      const extraLnor = (ie.dpDmid / (pec * (1 - pec)) - ic.dpDmid / (pcc * (1 - pcc))) ** 2 * mv;
       const m = effectMeasures(pe, pc, varPe, varPc, conf, ciType, extraRd, extraLnrr, extraLnor);
       return row(mth, null, pe, pc, m, null, varPe + varPc + extraRd);
     }
@@ -380,18 +440,19 @@ export function responderAnalysis(data: StudyRow[], o: AnalysisOptions): ResultR
 
   const individualMethod = (): ResultRow => {
     const ps = perStudyStats(data, o.mid, direction, seMethod, dist, df, midSd);
-    const pRd = dlPool(ps.map((s) => s.rd), ps.map((s) => s.var_rd), conf);
-    const pRr = dlPool(ps.map((s) => s.lnrr), ps.map((s) => s.var_lnrr), conf);
-    const pOr = dlPool(ps.map((s) => s.lnor), ps.map((s) => s.var_lnor), conf);
+    const pRd = dlPool(ps.map((s) => s.rd), ps.map((s) => s.var_rd), conf, ciMethod);
+    const pRr = dlPool(ps.map((s) => s.lnrr), ps.map((s) => s.var_lnrr), conf, ciMethod);
+    const pOr = dlPool(ps.map((s) => s.lnor), ps.map((s) => s.var_lnor), conf, ciMethod);
     const sRd = pickPool(pRd, pooling, conf);
     const sRr = pickPool(pRr, pooling, conf);
     const sOr = pickPool(pOr, pooling, conf);
     const nnt = nntFromRd(sRd.est, sRd.lb, sRd.ub);
+    const bdry = isBoundary(ps.map((s) => s.p_e), ps.map((s) => s.p_c));
     const m: Measures = {
       rd: sRd.est, rd_lb: sRd.lb, rd_ub: sRd.ub,
-      rr: Math.exp(sRr.est), rr_lb: Math.exp(sRr.lb), rr_ub: Math.exp(sRr.ub),
-      or: Math.exp(sOr.est), or_lb: Math.exp(sOr.lb), or_ub: Math.exp(sOr.ub),
-      nnt: nnt.nnt, nnt_lb: nnt.nntLb, nnt_ub: nnt.nntUb,
+      rr: bdry ? null : Math.exp(sRr.est), rr_lb: bdry ? null : Math.exp(sRr.lb), rr_ub: bdry ? null : Math.exp(sRr.ub),
+      or: bdry ? null : Math.exp(sOr.est), or_lb: bdry ? null : Math.exp(sOr.lb), or_ub: bdry ? null : Math.exp(sOr.ub),
+      nnt: bdry ? null : nnt.nnt, nnt_lb: bdry ? null : nnt.nntLb, nnt_ub: bdry ? null : nnt.nntUb,
     };
     const het = pooling === "fixed" ? { ...pRd, piLb: null, piUb: null } : pRd;
     return row("individual", pooling, null, null, m, het, sRd.var);
@@ -404,7 +465,7 @@ export function responderAnalysis(data: StudyRow[], o: AnalysisOptions): ResultR
     const jc = data.map((d) => 1 - 3 / (4 * (d.n_e + d.n_c) - 9));
     const g = dd.map((x, i) => jc[i] * x);
     const varG = dd.map((x, i) => jc[i] ** 2 * ((data[i].n_e + data[i].n_c) / (data[i].n_e * data[i].n_c) + (x * x) / (2 * (data[i].n_e + data[i].n_c))));
-    const pG = dlPool(g, varG, conf);
+    const pG = dlPool(g, varG, conf, ciMethod);
     const sG = pickPool(pG, pooling, conf);
     const cf = Math.PI / Math.sqrt(3);
     const lnOr = cf * sG.est;
@@ -418,10 +479,12 @@ export function responderAnalysis(data: StudyRow[], o: AnalysisOptions): ResultR
     const pe = peFromOr(or);
     const rd = pe - pc;
     const nnt = nntFromRd(rd, peFromOr(orLb) - pc, peFromOr(orUb) - pc);
+    const bdry = isBoundary([pe], [pc]);
     const m: Measures = {
       rd, rd_lb: peFromOr(orLb) - pc, rd_ub: peFromOr(orUb) - pc,
-      rr: pe / pc, rr_lb: peFromOr(orLb) / pc, rr_ub: peFromOr(orUb) / pc,
-      or, or_lb: orLb, or_ub: orUb, nnt: nnt.nnt, nnt_lb: nnt.nntLb, nnt_ub: nnt.nntUb,
+      rr: bdry ? null : pe / pc, rr_lb: bdry ? null : peFromOr(orLb) / pc, rr_ub: bdry ? null : peFromOr(orUb) / pc,
+      or: bdry ? null : or, or_lb: bdry ? null : orLb, or_ub: bdry ? null : orUb,
+      nnt: bdry ? null : nnt.nnt, nnt_lb: bdry ? null : nnt.nntLb, nnt_ub: bdry ? null : nnt.nntUb,
     };
     const het = pooling === "fixed" ? { ...pG, piLb: null, piUb: null } : pG;
     return row("smd", pooling, pe, pc, m, het, null);
@@ -485,6 +548,7 @@ export function traceCalculations(data: StudyRow[], o: AnalysisOptions): CalcTra
   const df = opt(o.df, null);
   const midSd = opt(o.mid_sd, 0);
   const ciType = opt(o.ci_type, "wald");
+  const ciMethod = opt(o.ci_method, "wald");
   const conf = opt(o.conf_level, 0.95);
   const z = qnorm((1 + conf) / 2);
 
@@ -494,41 +558,47 @@ export function traceCalculations(data: StudyRow[], o: AnalysisOptions): CalcTra
     se: Math.sqrt(s.var_rd), weight: 1 / s.var_rd,
   }));
   const sumWeight = sum(perStudy.map((s) => s.weight));
-  const pool = dlPool(ps.map((s) => s.rd), ps.map((s) => s.var_rd), conf);
+  const pool = dlPool(ps.map((s) => s.rd), ps.map((s) => s.var_rd), conf, ciMethod);
 
   const seF = Math.sqrt(pool.fixedVar);
-  const seR = Math.sqrt(pool.var);
 
-  const ae = armSummary(data.map((d) => d.change_e), data.map((d) => d.sd_e), data.map((d) => d.n_e), "weighted");
-  const ac = armSummary(data.map((d) => d.change_c), data.map((d) => d.sd_c), data.map((d) => d.n_c), "weighted");
+  const nE = data.map((d) => d.n_e);
+  const nC = data.map((d) => d.n_c);
+  const ae = armSummary(data.map((d) => d.change_e), data.map((d) => d.sd_e), nE, "weighted");
+  const ac = armSummary(data.map((d) => d.change_c), data.map((d) => d.sd_c), nC, "weighted");
   const ie = probInfo(ae.mu, ae.sigma, 2, o.mid, direction, dist, df);
   const ic = probInfo(ac.mu, ac.sigma, 2, o.mid, direction, dist, df);
-  const varPe = ie.dpDmu ** 2 * ae.varMu;
-  const varPc = ic.dpDmu ** 2 * ac.varMu;
+  // Same full weighted variance as the result path: mean + pooled-SD + MID terms.
+  const varSigmaE = (ae.sigma * ae.sigma) / (2 * sum(nE.map((n) => n - 1)));
+  const varSigmaC = (ac.sigma * ac.sigma) / (2 * sum(nC.map((n) => n - 1)));
+  const varPe = ie.dpDmu ** 2 * ae.varMu + ie.dpDsigma ** 2 * varSigmaE;
+  const varPc = ic.dpDmu ** 2 * ac.varMu + ic.dpDsigma ** 2 * varSigmaC;
+  const extraRd = (ie.dpDmid - ic.dpDmid) ** 2 * midSd * midSd;
 
   return {
     se_method: seMethod, pooling, ci_type: ciType, conf_level: conf,
     perStudy, sumWeight,
     fixed: { rd: pool.fixed, se: seF, lb: pool.fixed - z * seF, ub: pool.fixed + z * seF },
     random: {
-      rd: pool.est, se: seR, lb: pool.ciLb, ub: pool.ciUb,
+      rd: pool.est, se: pool.se, lb: pool.ciLb, ub: pool.ciUb,
       tau2: pool.tau2, i2: pool.i2, q: pool.q, q_p: pool.qP,
       pi_lb: pool.piLb, pi_ub: pool.piUb,
     },
     weighted: {
       mu_e: ae.mu, sigma_e: ae.sigma, var_mu_e: ae.varMu, p_e: ie.p, var_pe: varPe,
       mu_c: ac.mu, sigma_c: ac.sigma, var_mu_c: ac.varMu, p_c: ic.p, var_pc: varPc,
-      rd: ie.p - ic.p, se: Math.sqrt(varPe + varPc),
+      rd: ie.p - ic.p, se: Math.sqrt(varPe + varPc + extraRd),
     },
   };
 }
 
 export function responderCles(
   data: StudyRow[],
-  o: { direction?: Direction; pooling?: Pooling; conf_level?: number } = {},
+  o: { direction?: Direction; pooling?: Pooling; ci_method?: CiMethod; conf_level?: number } = {},
 ): ClesResult {
   const direction = opt(o.direction, "higher");
   const pooling = opt(o.pooling, "fixed");
+  const ciMethod = opt(o.ci_method, "wald");
   const conf = opt(o.conf_level, 0.95);
   const sgn = direction === "higher" ? 1 : -1;
   const z = qnorm((1 + conf) / 2);
@@ -544,7 +614,7 @@ export function responderCles(
     cles_lb: pnorm(delta[i] - z * Math.sqrt(varDelta[i])),
     cles_ub: pnorm(delta[i] + z * Math.sqrt(varDelta[i])),
   }));
-  const pool = dlPool(delta, varDelta, conf);
+  const pool = dlPool(delta, varDelta, conf, ciMethod);
   const sD = pickPool(pool, pooling, conf);
   return {
     studies, cles: pnorm(sD.est), cles_lb: pnorm(sD.lb), cles_ub: pnorm(sD.ub),

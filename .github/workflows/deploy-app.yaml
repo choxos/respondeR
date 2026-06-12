@@ -1,0 +1,52 @@
+# Build the respondeR browser app from this app-only branch and publish it at
+# https://choxos.github.io/respondeR/app/ .
+#
+# Coexistence with the pkgdown site (which owns the gh-pages root):
+#   * pkgdown.yaml (on main) deploys the docs to the gh-pages root with
+#     clean: false, so it overlays the package website and never deletes /app.
+#   * This workflow deploys ONLY into the gh-pages app/ subfolder
+#     (target-folder: app) with clean: true, scoped to app/: it purges stale
+#     Vite bundles inside app/ but never touches pkgdown's root files.
+name: deploy-app.yaml
+
+on:
+  push:
+    branches: [webapp]
+  pull_request:
+    branches: [webapp]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gh-pages-deploy
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build -- --base=/respondeR/app/
+      - run: touch dist/.nojekyll
+
+      - name: Deploy to gh-pages/app
+        if: github.event_name != 'pull_request'
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: dist
+          target-folder: app
+          clean: true
+          commit-message: "Deploy respondeR app to /app [skip ci]"

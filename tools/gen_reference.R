@@ -1,6 +1,8 @@
 # Generate the parity fixture: run the respondeR engine on the example data
 # across a range of options and write the results to JSON for the web app's
-# vitest parity test.  Run with: Rscript webapp/tools/gen_reference.R
+# vitest parity test. Requires the respondeR package to be installed
+# (install.packages or remotes::install_github("choxos/respondeR")).
+# Run from the web app branch root with: Rscript tools/gen_reference.R
 
 library(respondeR)
 library(jsonlite)
@@ -52,15 +54,41 @@ add("responder_analysis",
          pooling = "fixed", dist = "t", df = 8, ci_type = "wald", conf_level = 0.95),
     responder_analysis(d, mid = 1, method = "weighted", dist = "t", df = 8))
 
-add("responder_analysis",
-    list(mid = 1, direction = "higher", method = "weighted", se_method = "binomial",
-         pooling = "fixed", dist = "lognormal", ci_type = "wald", conf_level = 0.95),
-    responder_analysis(d, mid = 1, method = "weighted", dist = "lognormal"))
+# (No lognormal case: the example data include a negative control-arm mean
+# change, which the lognormal model correctly rejects.)
 
 add("responder_analysis",
     list(mid = 1, direction = "higher", method = "weighted", se_method = "binomial",
          pooling = "fixed", mid_sd = 0.3, ci_type = "wald", conf_level = 0.95),
     responder_analysis(d, mid = 1, method = "weighted", mid_sd = 0.3))
+
+# HKSJ random-effects interval (audit hardening)
+add("responder_analysis",
+    list(mid = 1, direction = "higher", method = c("individual", "smd"),
+         se_method = "binomial", pooling = "random", tau_method = "DL",
+         ci_method = "hksj", ci_type = "wald", conf_level = 0.95),
+    responder_analysis(d, mid = 1, method = c("individual", "smd"),
+                       pooling = "random", ci_method = "hksj"))
+
+# Boundary case: an extreme MID pins both arms, so RD is finite but RR/OR/NNT
+# are NA. Confirms the boundary policy matches between R and TypeScript.
+add("responder_analysis",
+    list(mid = -20, direction = "higher",
+         method = c("individual", "weighted", "smd"),
+         se_method = "binomial", pooling = "fixed", ci_type = "wald", conf_level = 0.95),
+    suppressWarnings(responder_analysis(d, mid = -20,
+                       method = c("individual", "weighted", "smd"))))
+
+# Median-control baseline (Sofi-Mahmudi 2024): every summary method shares the
+# median control arm, so the weighted method reports point estimates only.
+add("responder_analysis",
+    list(mid = 1, direction = "higher",
+         method = c("individual", "weighted", "unweighted", "median"),
+         se_method = "binomial", pooling = "fixed", control = "median",
+         ci_type = "wald", conf_level = 0.95),
+    responder_analysis(d, mid = 1,
+                       method = c("individual", "weighted", "unweighted", "median"),
+                       control = "median"))
 
 # responder_rd_individual
 for (direction in c("higher", "lower")) {
@@ -85,7 +113,21 @@ for (direction in c("higher", "lower")) {
   }
 }
 
-out <- "webapp/src/lib/__fixtures__/reference.json"
+# CLES with HKSJ random-effects interval
+{
+  cl <- responder_cles(d, pooling = "random", ci_method = "hksj")
+  res <- list(
+    studies = cl$studies,
+    cles = cl$cles, cles_lb = cl$cles_lb, cles_ub = cl$cles_ub,
+    delta = cl$delta, se_delta = cl$se_delta,
+    tau2 = cl$tau2, i2 = cl$i2, q = cl$q, q_p = cl$q_p,
+    pi_lb = cl$pi_lb, pi_ub = cl$pi_ub
+  )
+  add("responder_cles",
+      list(direction = "higher", pooling = "random", ci_method = "hksj", conf_level = 0.95), res)
+}
+
+out <- "src/lib/__fixtures__/reference.json"
 writeLines(toJSON(cases, dataframe = "rows", na = "null", null = "null",
                   auto_unbox = TRUE, digits = NA), out)
 cat("Wrote", length(cases), "cases to", out, "\n")

@@ -8,13 +8,15 @@ import {
   type Method,
   type Direction,
   type Pooling,
+  type Control,
   type CiType,
+  type CiMethod,
   type SeMethod,
   type Dist,
   type ResultRow,
   type CalcTrace,
 } from "./lib/engine";
-import { sampleData } from "./lib/sample";
+import { sampleData, vasPainData } from "./lib/sample";
 import { parseFile, templateCsv, toCsv } from "./lib/parse";
 import ForestPlot from "./components/ForestPlot";
 
@@ -39,7 +41,9 @@ interface Options {
   direction: Direction;
   methods: Method[];
   pooling: Pooling;
+  control: Control;
   ci_type: CiType;
+  ci_method: CiMethod;
   se_method: SeMethod;
   dist: Dist;
   df: number;
@@ -50,7 +54,7 @@ interface Options {
 const DEFAULT_OPTIONS: Options = {
   mid: 1, direction: "higher",
   methods: ["individual", "weighted", "unweighted", "median"],
-  pooling: "fixed", ci_type: "wald", se_method: "binomial",
+  pooling: "fixed", control: "matched", ci_type: "wald", ci_method: "wald", se_method: "binomial",
   dist: "normal", df: 10, mid_sd: 0, conf_level: 0.95,
 };
 
@@ -79,13 +83,17 @@ export default function App() {
     try {
       const common = {
         mid: opt.mid, direction: opt.direction, se_method: opt.se_method, pooling: opt.pooling,
+        control: opt.control,
         dist: opt.dist, df: opt.dist === "t" ? opt.df : null, mid_sd: opt.mid_sd,
-        ci_type: opt.ci_type, conf_level: opt.conf_level,
+        ci_type: opt.ci_type, ci_method: opt.ci_method, conf_level: opt.conf_level,
       };
       return {
         results: responderAnalysis(data, { ...common, method: opt.methods }),
         perStudy: responderRdIndividual(data, common),
-        cles: responderCles(data, { direction: opt.direction, pooling: opt.pooling, conf_level: opt.conf_level }),
+        cles: responderCles(data, {
+          direction: opt.direction, pooling: opt.pooling,
+          ci_method: opt.ci_method, conf_level: opt.conf_level,
+        }),
         trace: traceCalculations(data, common),
         err: null as string | null,
       };
@@ -115,9 +123,15 @@ export default function App() {
         <aside className="space-y-6 lg:sticky lg:top-6 lg:self-start">
           <DataCard dataLabel={dataLabel} nStudies={data.length}
             onSample={() => { setData(sampleData); setDataLabel("Example data"); setError(null); }}
+            onVas={() => {
+              setData(vasPainData);
+              setDataLabel("VAS pain (Li et al. 2025)");
+              setOpt((o) => ({ ...o, mid: -1.5, direction: "lower" }));
+              setError(null);
+            }}
             onUpload={() => fileInput.current?.click()}
             onTemplate={() => download("responder_template.csv", templateCsv())} />
-          <input ref={fileInput} type="file" accept=".csv,.xlsx,.xls" className="hidden"
+          <input ref={fileInput} type="file" accept=".csv,.txt" className="hidden"
             onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])} />
           <OptionsCard opt={opt} set={set} />
         </aside>
@@ -185,18 +199,23 @@ function Footer() {
       <p>Runs entirely in your browser; no data leaves your machine. References:</p>
       <p>Sofi-Mahmudi, A. (2024). Identifying an optimal strategy for converting pain as a continuous outcome to a responder analysis [Master's thesis, McMaster University]. <a className="underline hover:text-brand" href="https://hdl.handle.net/11375/30210" target="_blank" rel="noreferrer">hdl.handle.net/11375/30210</a></p>
       <p>Thorlund, K., et al. (2011). Pooling health-related quality of life outcomes in meta-analysis: a tutorial and review of methods for enhancing interpretability. Research Synthesis Methods, 2(3), 188 to 203. <a className="underline hover:text-brand" href="https://doi.org/10.1002/jrsm.46" target="_blank" rel="noreferrer">doi:10.1002/jrsm.46</a></p>
+      <p>VAS pain data: Li, Z., Bao, Z., Wang, S., &amp; Zhao, M. (2025). Meta-analysis of the best exercise mode and dose study for improving spinal health. Frontiers in Sports and Active Living, 7, 1614906. <a className="underline hover:text-brand" href="https://doi.org/10.3389/fspor.2025.1614906" target="_blank" rel="noreferrer">doi:10.3389/fspor.2025.1614906</a>. Reproduced under CC BY 4.0.</p>
     </footer>
   );
 }
 
-function DataCard(props: { dataLabel: string; nStudies: number; onSample: () => void; onUpload: () => void; onTemplate: () => void }) {
+function DataCard(props: {
+  dataLabel: string; nStudies: number;
+  onSample: () => void; onVas: () => void; onUpload: () => void; onTemplate: () => void;
+}) {
   return (
     <div className="card p-5">
       <h2 className="text-sm font-semibold text-slate-700">Data</h2>
       <p className="mt-1 text-xs text-slate-500">{props.nStudies} {props.nStudies === 1 ? "study" : "studies"} ({props.dataLabel})</p>
       <div className="mt-3 flex flex-wrap gap-2">
-        <button className="btn btn-primary" onClick={props.onUpload}>Upload CSV / Excel</button>
+        <button className="btn btn-primary" onClick={props.onUpload}>Upload CSV</button>
         <button className="btn btn-ghost" onClick={props.onSample}>Example</button>
+        <button className="btn btn-ghost" onClick={props.onVas}>VAS pain</button>
         <button className="btn btn-ghost" onClick={props.onTemplate}>Template</button>
       </div>
       <p className="mt-3 text-xs text-slate-400">Columns: study, change_e, sd_e, n_e, change_c, sd_c, n_c</p>
@@ -247,10 +266,22 @@ function OptionsCard({ opt, set }: { opt: Options; set: <K extends keyof Options
         <Segmented value={opt.pooling} onChange={(v) => set("pooling", v)}
           options={[{ value: "fixed", label: "Fixed" }, { value: "random", label: "Random" }]} />
       </div>
+      {opt.pooling === "random" && (
+        <div>
+          <label className="label">Random-effects interval</label>
+          <Segmented value={opt.ci_method} onChange={(v) => set("ci_method", v)}
+            options={[{ value: "wald", label: "Wald" }, { value: "hksj", label: "HKSJ" }]} />
+        </div>
+      )}
       <div>
         <label className="label">Interval type</label>
         <Segmented value={opt.ci_type} onChange={(v) => set("ci_type", v)}
           options={[{ value: "wald", label: "Wald" }, { value: "logit", label: "Logit" }]} />
+      </div>
+      <div>
+        <label className="label">Baseline risk (summary methods)</label>
+        <Segmented value={opt.control} onChange={(v) => set("control", v)}
+          options={[{ value: "matched", label: "Matched" }, { value: "median", label: "Median control" }]} />
       </div>
       <details className="text-sm">
         <summary className="cursor-pointer text-xs font-semibold uppercase tracking-wide text-slate-500">Advanced</summary>

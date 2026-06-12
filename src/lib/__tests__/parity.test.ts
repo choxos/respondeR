@@ -45,7 +45,10 @@ describe("TypeScript engine matches the R reference", () => {
         const out = responderRdIndividual(sampleData, c.args as unknown as AnalysisOptions);
         compareRows(out as unknown as Record<string, unknown>[], c.result as Record<string, unknown>[], c.fn);
       } else if (c.fn === "responder_cles") {
-        const a = c.args as { direction?: "higher" | "lower"; pooling?: "fixed" | "random"; conf_level?: number };
+        const a = c.args as {
+          direction?: "higher" | "lower"; pooling?: "fixed" | "random";
+          ci_method?: "wald" | "hksj"; conf_level?: number;
+        };
         const out = responderCles(sampleData, a);
         const exp = c.result as Record<string, unknown>;
         const outRec = out as unknown as Record<string, unknown>;
