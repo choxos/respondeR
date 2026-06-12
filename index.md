@@ -17,7 +17,7 @@ threshold-free common-language effect size. The estimation methods were
 evaluated in a simulation study (Sofi-Mahmudi, 2024).
 
 **Try it in the browser (no install):**
-<https://choxos.github.io/respondeR/app>
+<https://choxos.github.io/respondeR/app/>
 
 **Documentation:** <https://choxos.github.io/respondeR/>
 
@@ -156,7 +156,7 @@ launch_responder_analysis()
 ```
 
 The same tool runs entirely in your browser (no R, no install) at
-<https://choxos.github.io/respondeR/app>.
+<https://choxos.github.io/respondeR/app/>.
 
 ## Vignettes
 

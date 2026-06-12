@@ -224,7 +224,7 @@ launch_responder_analysis()
 ```
 
 The same tool runs in the browser, with no installation, at
-<https://choxos.github.io/respondeR/app>.
+<https://choxos.github.io/respondeR/app/>.
 
 ## Where next
 
