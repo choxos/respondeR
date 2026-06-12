@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-slate-50 text-slate-800 antialiased;
+  font-family: "Poppins", ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer components {
+  .card {
+    @apply rounded-xl border border-slate-200 bg-white shadow-sm;
+  }
+  .label {
+    @apply block text-xs font-semibold uppercase tracking-wide text-slate-500;
+  }
+  .input {
+    @apply mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm
+      focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30;
+  }
+  .seg {
+    @apply inline-flex rounded-lg border border-slate-300 bg-slate-50 p-0.5;
+  }
+  .seg button {
+    @apply rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 transition;
+  }
+  .seg button[data-active="true"] {
+    @apply bg-brand text-white shadow;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition;
+  }
+  .btn-primary {
+    @apply bg-brand text-white hover:bg-brand/90;
+  }
+  .btn-ghost {
+    @apply border border-slate-300 bg-white text-slate-700 hover:bg-slate-50;
+  }
+}
