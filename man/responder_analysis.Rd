@@ -8,91 +8,104 @@ responder_analysis(
   data,
   mid,
   direction = c("higher", "lower"),
-  method = c("individual", "weighted", "unweighted", "median"),
+  method = c("individual", "weighted", "unweighted", "median", "smd"),
   se_method = c("binomial", "delta"),
+  pooling = c("fixed", "random"),
+  tau_method = c("DL", "REML"),
+  dist = c("normal", "lognormal", "t"),
+  df = NULL,
+  mid_sd = 0,
+  ci_type = c("wald", "logit"),
   conf_level = 0.95
 )
 }
 \arguments{
 \item{data}{A data frame with one row per study and columns \code{study},
-\code{change_e}, \code{sd_e}, \code{n_e} (experimental arm) and \code{change_c}, \code{sd_c}, \code{n_c}
-(control arm). See \link{sample_responder_data}.}
+\code{change_e}, \code{sd_e}, \code{n_e}, \code{change_c}, \code{sd_c}, \code{n_c}. See
+\link{sample_responder_data}.}
 
 \item{mid}{Single finite number: the minimal important difference threshold.}
 
-\item{direction}{Either \code{"higher"} (a larger change indicates response) or
-\code{"lower"} (a smaller change indicates response).}
+\item{direction}{\code{"higher"} (a larger change indicates response) or
+\code{"lower"}.}
 
-\item{method}{Character vector of methods to compute, any of \code{"individual"},
-\code{"weighted"}, \code{"unweighted"}, \code{"median"}. Defaults to all four.}
+\item{method}{Methods to compute: any of \code{"individual"}, \code{"weighted"},
+\code{"unweighted"}, \code{"median"}, \code{"smd"}. Defaults to the first four.}
 
-\item{se_method}{Standard-error model for the \code{"individual"} method:
-\code{"binomial"} (Wald, the default) or \code{"delta"} (propagates uncertainty in the
-estimated mean and SD).}
+\item{se_method}{SE model for \code{"individual"}: \code{"binomial"} (default) or
+\code{"delta"}.}
 
-\item{conf_level}{Confidence level for the intervals (default \code{0.95}).}
+\item{pooling}{\code{"fixed"} (default) or \code{"random"} effects, for the
+\code{"individual"} and \code{"smd"} methods.}
+
+\item{tau_method}{Between-study variance estimator when \code{pooling = "random"}:
+\code{"DL"} (DerSimonian-Laird, default) or \code{"REML"} (needs the \code{metafor}
+package; falls back to DL with a warning if unavailable).}
+
+\item{dist}{Change-score distribution: \code{"normal"} (default), \code{"lognormal"}
+or \code{"t"}.}
+
+\item{df}{Degrees of freedom when \code{dist = "t"}.}
+
+\item{mid_sd}{Optional standard deviation of the MID threshold; when \verb{> 0}
+its uncertainty is propagated into the effect-measure variances.}
+
+\item{ci_type}{\code{"wald"} (default) or \code{"logit"} (keeps proportion and
+risk-difference intervals within valid bounds via the logit transform and
+Newcombe's MOVER method).}
+
+\item{conf_level}{Confidence level (default \code{0.95}).}
 }
 \value{
-A data frame with one row per requested method and columns:
-\describe{
-\item{method}{Method name.}
-\item{p_e, p_c}{Experimental and control responder proportions (\verb{[0, 1]}),
-or \code{NA} for \code{"individual"}.}
-\item{rd}{Risk difference (\code{p_e - p_c}), on the \verb{[0, 1]} scale.}
-\item{ci_lb, ci_ub}{Confidence-interval bounds for \code{rd}, or \code{NA} when no
-variance model applies (\code{"median"}, \code{"unweighted"}).}
-\item{var_rd}{Variance of \code{rd}, or \code{NA}.}
-\item{k}{Number of studies.}
-}
-Proportions and risk differences are on the proportion scale; multiply by
-100 for percentages.
+A data frame with one row per requested method and columns: \code{method},
+\code{pooling}, \code{k}, \code{p_e}, \code{p_c}, \code{rd}/\code{rd_lb}/\code{rd_ub}, \code{rr}/\code{rr_lb}/\code{rr_ub},
+\code{or}/\code{or_lb}/\code{or_ub}, \code{nnt}/\code{nnt_lb}/\code{nnt_ub}, \code{var_rd}, and the
+heterogeneity statistics \code{tau2}, \code{i2}, \code{q}, \code{q_p}, \code{pi_lb}, \code{pi_ub} (for the
+pooled methods). Proportions, risk differences and CLES are on the
+proportion scale; multiply by 100 for percentages.
 }
 \description{
 Converts continuous outcomes (mean change, SD and sample size per arm, across
-studies) into responder proportions and the between-arm risk difference (RD),
-using up to four pooling strategies. Responders are defined by a minimal
-important difference (MID) threshold under a Normal model for the change
-scores -- the cut-point ("dichotomisation") approach of Anzures-Cabrera,
-Sarpatwari and Higgins (2011).
+studies) into responder proportions and a range of between-arm effect
+measures -- risk difference (RD), risk ratio (RR), odds ratio (OR) and number
+needed to treat (NNT) -- under a parametric model for the change scores.
+Responders are defined by a minimal important difference (MID) threshold (the
+cut-point / "dichotomisation" approach of Anzures-Cabrera, Sarpatwari and
+Higgins, 2011). For a threshold-free alternative see \code{\link[=responder_cles]{responder_cles()}}.
 }
 \section{Methods}{
 
 \describe{
-\item{\code{individual}}{Dichotomise each study, then pool the per-study RDs by
-fixed-effect inverse variance. The most defensible option; the SE of each
-study's RD is set by \code{se_method}. Returns a pooled RD with a confidence
-interval; \code{p_e}/\code{p_c} are \code{NA} (they are not single proportions).}
+\item{\code{individual}}{Dichotomise each study, then pool the per-study effect
+measures (fixed or random effects). The most defensible option; the
+per-study SE follows \code{se_method}.}
 \item{\code{weighted}}{Pool the mean change by inverse variance and the SD by the
-within-study pooled SD, dichotomise the pooled summaries, and obtain the
-RD variance by the delta method. Aligned with the pooled-then-dichotomise
-estimator of the reference.}
-\item{\code{unweighted}}{Dichotomise the arithmetic mean of the study means and
-SDs. A summary with no variance model: the CI is \code{NA}.}
-\item{\code{median}}{Dichotomise the median of the study means and SDs. A
-robustness summary with no variance model: the CI is \code{NA}.}
+within-study pooled SD, dichotomise the pooled summaries, and obtain
+variances by the delta method.}
+\item{\code{unweighted}, \code{median}}{Dichotomise the arithmetic mean / median of
+the study means and SDs. Summaries with no variance model: intervals are
+\code{NA}.}
+\item{\code{smd}}{Pool the standardised mean difference (Hedges' g), bridge to an
+odds ratio via the logistic link (\verb{lnOR = (pi / sqrt(3)) g}), and combine
+with the weighted-pooled control responder rate to recover risks. The
+second approach of the reference; not included by default.}
 }
-The control proportion is always computed with the \emph{same} pooling strategy as
-the experimental proportion.
+The control proportion always uses the same pooling as the experimental arm.
 }
 
 \examples{
 responder_analysis(sample_responder_data, mid = 1)
 
-# Lower change is better, 90\% intervals, individual method only:
-responder_analysis(
-  sample_responder_data,
-  mid = 1,
-  direction = "lower",
-  method = "individual",
-  conf_level = 0.90
-)
+# Random-effects individual method with relative measures:
+responder_analysis(sample_responder_data, mid = 1,
+  method = "individual", pooling = "random")
 }
 \references{
-Anzures-Cabrera J, Sarpatwari A, Higgins JPT (2011).
-Expressing findings from meta-analyses of continuous outcomes in terms of
-risks. \emph{Statistics in Medicine}, 30(25), 2867-2880.
-\doi{10.1002/sim.4298}
+Anzures-Cabrera J, Sarpatwari A, Higgins JPT (2011). Expressing findings from
+meta-analyses of continuous outcomes in terms of risks. \emph{Statistics in
+Medicine}, 30(25), 2867-2880. \doi{10.1002/sim.4298}
 }
 \seealso{
-\code{\link[=responder_rd_individual]{responder_rd_individual()}}, \code{\link[=responder_proportions]{responder_proportions()}}
+\code{\link[=responder_rd_individual]{responder_rd_individual()}}, \code{\link[=responder_cles]{responder_cles()}},
+\code{\link[=responder_proportions]{responder_proportions()}}
 }

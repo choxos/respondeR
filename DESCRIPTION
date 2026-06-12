@@ -8,12 +8,14 @@ Description: A Shiny application for performing responder analysis in clinical t
 License: GPL-3 + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-Imports: 
+Imports:
+    stats,
     shiny,
     shinydashboard,
     DT
-Suggests: 
-    testthat (>= 3.0.0)
+Suggests:
+    testthat (>= 3.0.0),
+    metafor
 Config/testthat/edition: 3
 Depends: 
     R (>= 3.5)

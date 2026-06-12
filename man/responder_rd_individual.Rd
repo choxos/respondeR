@@ -9,35 +9,44 @@ responder_rd_individual(
   mid,
   direction = c("higher", "lower"),
   se_method = c("binomial", "delta"),
-  conf_level = 0.95
+  conf_level = 0.95,
+  dist = c("normal", "lognormal", "t"),
+  df = NULL,
+  mid_sd = 0
 )
 }
 \arguments{
 \item{data}{A data frame with one row per study and columns \code{study},
-\code{change_e}, \code{sd_e}, \code{n_e} (experimental arm) and \code{change_c}, \code{sd_c}, \code{n_c}
-(control arm). See \link{sample_responder_data}.}
+\code{change_e}, \code{sd_e}, \code{n_e}, \code{change_c}, \code{sd_c}, \code{n_c}. See
+\link{sample_responder_data}.}
 
 \item{mid}{Single finite number: the minimal important difference threshold.}
 
-\item{direction}{Either \code{"higher"} (a larger change indicates response) or
-\code{"lower"} (a smaller change indicates response).}
+\item{direction}{\code{"higher"} (a larger change indicates response) or
+\code{"lower"}.}
 
-\item{se_method}{Standard-error model for the \code{"individual"} method:
-\code{"binomial"} (Wald, the default) or \code{"delta"} (propagates uncertainty in the
-estimated mean and SD).}
+\item{se_method}{SE model for \code{"individual"}: \code{"binomial"} (default) or
+\code{"delta"}.}
 
-\item{conf_level}{Confidence level for the intervals (default \code{0.95}).}
+\item{conf_level}{Confidence level (default \code{0.95}).}
+
+\item{dist}{Change-score distribution: \code{"normal"} (default), \code{"lognormal"}
+or \code{"t"}.}
+
+\item{df}{Degrees of freedom when \code{dist = "t"}.}
+
+\item{mid_sd}{Optional standard deviation of the MID threshold; when \verb{> 0}
+its uncertainty is propagated into the effect-measure variances.}
 }
 \value{
 A data frame with one row per study and columns \code{study}, \code{p_e},
-\code{p_c}, \code{rd}, \code{se}, \code{ci_lb}, \code{ci_ub}. Proportions and risk differences are
-on the \verb{[0, 1]} (proportion) scale.
+\code{p_c}, \code{rd}, \code{se}, \code{ci_lb}, \code{ci_ub} (proportion scale).
 }
 \description{
 Dichotomises each study at the MID threshold and returns the per-study
 responder risk difference (experimental minus control) with a confidence
-interval. This is the building block for the \code{"individual"} method of
-\code{\link[=responder_analysis]{responder_analysis()}} and feeds the forest plot / per-study table.
+interval. Building block for the \code{"individual"} method of
+\code{\link[=responder_analysis]{responder_analysis()}}; also feeds the forest plot and per-study table.
 }
 \examples{
 responder_rd_individual(sample_responder_data, mid = 1)
