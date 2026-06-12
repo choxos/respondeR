@@ -52,7 +52,10 @@ In response to an external methodology audit:
   launches the bundled **ResponderAnalysis** Shiny application
   (direction toggle, method/pooling/interval options, RR/OR/NNT, a
   per-study forest plot, CLES and CSV/Excel I/O).
-- `sample_responder_data`: bundled example dataset.
+- `sample_responder_data`: small bundled example dataset.
+- `vas_pain`: a real bundled dataset of 20 exercise-for-spinal-health
+  trials pooled on the VAS pain scale (Li et al., 2025,
+  <doi:10.3389/fspor.2025.1614906>, reproduced under CC BY 4.0).
 
 ### Methods and options
 

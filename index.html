@@ -204,6 +204,11 @@
 </tr>
 </tbody>
 </table>
+<p>Two datasets ship with the package: <code>sample_responder_data</code> (a small toy example) and <code>vas_pain</code>, a real meta-analysis of 20 trials of exercise for spinal health pooled on the VAS pain scale (Li et al., 2025, reproduced under CC BY 4.0). Because VAS change is negative when pain improves, analyze it with <code>direction = "lower"</code>:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Proportion reaching a 1.5 cm VAS reduction, exercise vs control</span></span>
+<span><span class="fu"><a href="reference/responder_analysis.html">responder_analysis</a></span><span class="op">(</span><span class="va">vas_pain</span>, mid <span class="op">=</span> <span class="op">-</span><span class="fl">1.5</span>, direction <span class="op">=</span> <span class="st">"lower"</span>,</span>
+<span>                   pooling <span class="op">=</span> <span class="st">"random"</span>, ci_method <span class="op">=</span> <span class="st">"hksj"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="methods">Methods<a class="anchor" aria-label="anchor" href="#methods"></a>
@@ -303,7 +308,7 @@
 <h2 id="the-shiny-application">The Shiny application<a class="anchor" aria-label="anchor" href="#the-shiny-application"></a>
 </h2>
 <p>The package bundles a point-and-click app: upload data (CSV or Excel) or use the example, set the MID and direction, choose methods and options, and view the results table, per-study forest plot and CLES, with CSV downloads.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/launch_responder_analysis.html">launch_responder_analysis</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>The same tool runs entirely in your browser (no R, no install) at <a href="https://choxos.github.io/respondeR/app" class="uri">https://choxos.github.io/respondeR/app</a>.</p>
 </div>
@@ -335,11 +340,15 @@
 <blockquote>
 <p>Chinn, S. (2000). A simple method for converting an odds ratio to effect size for use in meta-analysis. <em>Statistics in Medicine</em>, 19(22), 3127 to 3131.</p>
 </blockquote>
+<p>Bundled data:</p>
+<blockquote>
+<p>Li, Z., Bao, Z., Wang, S., &amp; Zhao, M. (2025). Meta-analysis of the best exercise mode and dose study for improving spinal health. <em>Frontiers in Sports and Active Living</em>, 7, 1614906. <a href="https://doi.org/10.3389/fspor.2025.1614906" class="external-link">doi:10.3389/fspor.2025.1614906</a> (the <code>vas_pain</code> dataset, Figure 3, reproduced under CC BY 4.0).</p>
+</blockquote>
 </div>
 <div class="section level2">
 <h2 id="citing-responder">Citing respondeR<a class="anchor" aria-label="anchor" href="#citing-responder"></a>
 </h2>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"respondeR"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">

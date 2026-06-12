@@ -89,6 +89,19 @@ control arm `_c`):
 | `sd_c`     | SD of change in the control arm      |
 | `n_c`      | Control arm sample size              |
 
+Two datasets ship with the package: `sample_responder_data` (a small toy
+example) and `vas_pain`, a real meta-analysis of 20 trials of exercise
+for spinal health pooled on the VAS pain scale (Li et al., 2025,
+reproduced under CC BY 4.0). Because VAS change is negative when pain
+improves, analyze it with `direction = "lower"`:
+
+``` r
+
+# Proportion reaching a 1.5 cm VAS reduction, exercise vs control
+responder_analysis(vas_pain, mid = -1.5, direction = "lower",
+                   pooling = "random", ci_method = "hksj")
+```
+
 ## Methods
 
 A responder is a patient whose change crosses the MID. Under a Normal
@@ -180,6 +193,14 @@ The same tool runs entirely in your browser (no R, no install) at
 > effect size for use in meta-analysis. *Statistics in Medicine*,
 > 19(22), 3127 to 3131.
 
+Bundled data:
+
+> Li, Z., Bao, Z., Wang, S., & Zhao, M. (2025). Meta-analysis of the
+> best exercise mode and dose study for improving spinal health.
+> *Frontiers in Sports and Active Living*, 7, 1614906.
+> [doi:10.3389/fspor.2025.1614906](https://doi.org/10.3389/fspor.2025.1614906)
+> (the `vas_pain` dataset, Figure 3, reproduced under CC BY 4.0).
+
 ## Citing respondeR
 
 ``` r
@@ -234,6 +255,8 @@ Effect size that needs no MID.
 
 - [`sample_responder_data`](https://choxos.github.io/respondeR/reference/sample_responder_data.md)
   : Example responder-analysis dataset
+- [`vas_pain`](https://choxos.github.io/respondeR/reference/vas_pain.md)
+  : VAS pain change scores from a spinal-health exercise meta-analysis
 
 # Articles
 

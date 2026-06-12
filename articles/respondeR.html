@@ -240,10 +240,47 @@ treated patient responds better than a randomly chosen control.</p>
 <span><span class="co">#&gt; [1] "CLES = 69.0% (65.1% to 72.7%)"</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="a-real-example-vas-pain-after-exercise-therapy">A real example: VAS pain after exercise therapy<a class="anchor" aria-label="anchor" href="#a-real-example-vas-pain-after-exercise-therapy"></a>
+</h2>
+<p>The package bundles a real dataset, <code>vas_pain</code>: the 20
+randomized trials of exercise for spinal health pooled for the visual
+analogue scale (VAS) pain outcome by Li, Bao, Wang and Zhao (2025). The
+change scores are post minus baseline VAS on a 0 to 10 cm scale, so a
+more negative value is a larger pain reduction; we analyze with
+<code>direction = "lower"</code> and a negative MID equal to the
+responder threshold. Using a 1.5 cm reduction as the minimal important
+difference:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/responder_analysis.html">responder_analysis</a></span><span class="op">(</span><span class="va">vas_pain</span>, mid <span class="op">=</span> <span class="op">-</span><span class="fl">1.5</span>, direction <span class="op">=</span> <span class="st">"lower"</span>,</span>
+<span>                          pooling <span class="op">=</span> <span class="st">"random"</span>, ci_method <span class="op">=</span> <span class="st">"hksj"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/format_responder_results.html">format_responder_results</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span>
+<span><span class="co">#&gt;            Method   PE   PC                  RD                  RR</span></span>
+<span><span class="co">#&gt; 1      Individual    -    - 17.5 (10.6 to 24.3) 1.19 (1.08 to 1.32)</span></span>
+<span><span class="co">#&gt; 2   Weighted mean 84.4 63.4 21.0 (18.2 to 23.7) 1.33 (1.28 to 1.38)</span></span>
+<span><span class="co">#&gt; 3 Unweighted mean 78.7 47.1                31.6                1.67</span></span>
+<span><span class="co">#&gt; 4          Median 83.9 37.3                46.7                2.25</span></span>
+<span><span class="co">#&gt;                    OR</span></span>
+<span><span class="co">#&gt; 1 3.22 (2.27 to 4.57)</span></span>
+<span><span class="co">#&gt; 2 3.11 (2.63 to 3.68)</span></span>
+<span><span class="co">#&gt; 3                4.14</span></span>
+<span><span class="co">#&gt; 4                8.81</span></span></code></pre></div>
+<p>So, pooling the per-study estimates, roughly 17 to 21 more exercise
+patients per 100 reach a 1.5 cm pain reduction than controls, depending
+on the method. The threshold-free common-language effect size avoids
+picking a cut-point:</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">cles</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/responder_cles.html">responder_cles</a></span><span class="op">(</span><span class="va">vas_pain</span>, direction <span class="op">=</span> <span class="st">"lower"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"A treated patient has less pain than a control %.0f%% of the time (%.0f%% to %.0f%%)"</span>,</span>
+<span>        <span class="fl">100</span> <span class="op">*</span> <span class="va">cles</span><span class="op">$</span><span class="va">cles</span>, <span class="fl">100</span> <span class="op">*</span> <span class="va">cles</span><span class="op">$</span><span class="va">cles_lb</span>, <span class="fl">100</span> <span class="op">*</span> <span class="va">cles</span><span class="op">$</span><span class="va">cles_ub</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "A treated patient has less pain than a control 71% of the time (68% to 74%)"</span></span></code></pre></div>
+<p>(Data from Li et al. (2025), Frontiers in Sports and Active Living, ,
+Figure 3, reproduced under CC BY 4.0.)</p>
+</div>
+<div class="section level2">
 <h2 id="the-shiny-application">The Shiny application<a class="anchor" aria-label="anchor" href="#the-shiny-application"></a>
 </h2>
 <p>Everything above is available in a point-and-click app:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/launch_responder_analysis.html">launch_responder_analysis</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>The same tool runs in the browser, with no installation, at <a href="https://choxos.github.io/respondeR/app" class="uri">https://choxos.github.io/respondeR/app</a>.</p>
 </div>

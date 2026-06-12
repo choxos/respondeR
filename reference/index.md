@@ -29,3 +29,5 @@ Effect size that needs no MID.
 
 - [`sample_responder_data`](https://choxos.github.io/respondeR/reference/sample_responder_data.md)
   : Example responder-analysis dataset
+- [`vas_pain`](https://choxos.github.io/respondeR/reference/vas_pain.md)
+  : VAS pain change scores from a spinal-health exercise meta-analysis

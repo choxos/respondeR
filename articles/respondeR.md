@@ -171,6 +171,49 @@ sprintf("CLES = %.1f%% (%.1f%% to %.1f%%)",
 #> [1] "CLES = 69.0% (65.1% to 72.7%)"
 ```
 
+## A real example: VAS pain after exercise therapy
+
+The package bundles a real dataset, `vas_pain`: the 20 randomized trials
+of exercise for spinal health pooled for the visual analogue scale (VAS)
+pain outcome by Li, Bao, Wang and Zhao (2025). The change scores are
+post minus baseline VAS on a 0 to 10 cm scale, so a more negative value
+is a larger pain reduction; we analyze with `direction = "lower"` and a
+negative MID equal to the responder threshold. Using a 1.5 cm reduction
+as the minimal important difference:
+
+``` r
+
+res <- responder_analysis(vas_pain, mid = -1.5, direction = "lower",
+                          pooling = "random", ci_method = "hksj")
+format_responder_results(res)
+#>            Method   PE   PC                  RD                  RR
+#> 1      Individual    -    - 17.5 (10.6 to 24.3) 1.19 (1.08 to 1.32)
+#> 2   Weighted mean 84.4 63.4 21.0 (18.2 to 23.7) 1.33 (1.28 to 1.38)
+#> 3 Unweighted mean 78.7 47.1                31.6                1.67
+#> 4          Median 83.9 37.3                46.7                2.25
+#>                    OR
+#> 1 3.22 (2.27 to 4.57)
+#> 2 3.11 (2.63 to 3.68)
+#> 3                4.14
+#> 4                8.81
+```
+
+So, pooling the per-study estimates, roughly 17 to 21 more exercise
+patients per 100 reach a 1.5 cm pain reduction than controls, depending
+on the method. The threshold-free common-language effect size avoids
+picking a cut-point:
+
+``` r
+
+cles <- responder_cles(vas_pain, direction = "lower")
+sprintf("A treated patient has less pain than a control %.0f%% of the time (%.0f%% to %.0f%%)",
+        100 * cles$cles, 100 * cles$cles_lb, 100 * cles$cles_ub)
+#> [1] "A treated patient has less pain than a control 71% of the time (68% to 74%)"
+```
+
+(Data from Li et al. (2025), Frontiers in Sports and Active Living, ,
+Figure 3, reproduced under CC BY 4.0.)
+
 ## The Shiny application
 
 Everything above is available in a point-and-click app:
