@@ -1,5 +1,5 @@
-Package: ResponderAnalysisApp
-Title: Responder Analysis Shiny Application
+Package: respondeR
+Title: Responder Analysis for Continuous Outcomes
 Version: 0.1.0
 Authors@R: 
     person("Ahmad", "Sofi-Mahmudi", , "a.sofimahmudi@gmail.com", role = c("aut", "cre"),

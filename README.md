@@ -1,14 +1,14 @@
-# ResponderAnalysisApp
+# respondeR
 
 This R package provides a Shiny application for performing responder analysis in clinical trials.
 
 ## Installation
 
-You can install the development version of ResponderAnalysisApp from GitHub with:
+You can install the development version of respondeR from GitHub with:
 
 ```r
 # install.packages("devtools")
-devtools::install_github("choxos/responder_analysis")
+devtools::install_github("choxos/respondeR")
 ```
 
 ## Usage
@@ -16,7 +16,7 @@ devtools::install_github("choxos/responder_analysis")
 To launch the Responder Analysis app, use the following command:
 
 ```r
-ResponderAnalysisApp::launch_responder_analysis()
+respondeR::launch_responder_analysis()
 ```
 
 ## Features
@@ -59,8 +59,8 @@ This project is licensed under the GNU GPL 3 License. See the [LICENSE](LICENSE)
 
 ## Contributing
 
-Contributions to improve ResponderAnalysisApp are welcome. Please feel free to submit a Pull Request.
+Contributions to improve respondeR are welcome. Please feel free to submit a Pull Request.
 
 ## Support
 
-If you encounter any problems or have any questions, please [open an issue](https://github.com/choxos/responder_analysis/issues) on GitHub.
+If you encounter any problems or have any questions, please [open an issue](https://github.com/choxos/respondeR/issues) on GitHub.

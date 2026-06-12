@@ -153,8 +153,8 @@ server <- function(input, output, session) {
                         ci_rd_unweighted_mean = rd_unweighted_mean + c(-1, 1) * qnorm(0.975) * sqrt(var_rd_unweighted_mean)
                         
                         # Weighted average
-                        weighted_avg_mean_e = ResponderAnalysisApp::iv_meta(rv$data$change_e, rv$data$sd_e, rv$data$n_e)
-                        weighted_avg_sd_e = ResponderAnalysisApp::iv_meta(rv$data$sd_e, rv$data$sd_e, rv$data$n_e)
+                        weighted_avg_mean_e = respondeR::iv_meta(rv$data$change_e, rv$data$sd_e, rv$data$n_e)
+                        weighted_avg_sd_e = respondeR::iv_meta(rv$data$sd_e, rv$data$sd_e, rv$data$n_e)
                         pe_weighted_mean = (1-pnorm((rv$mid-weighted_avg_mean_e)/weighted_avg_sd_e))*100
                         rd_weighted_mean = pe_weighted_mean - pc_median
                         var_rd_weighted_mean = (((pe_weighted_mean/100)*(1-(pe_weighted_mean/100)))/sum(rv$data$n_e)) + (((pc_median/100)*(1-(pc_median/100)))/sum(rv$data$n_c))
@@ -167,7 +167,7 @@ server <- function(input, output, session) {
                         summary_ind$RD = summary_ind$pe - summary_ind$pc
                         summary_ind$SE = sqrt(((summary_ind$pe*(100-summary_ind$pe)/summary_ind$n_e) +
                                                        (summary_ind$pc*(100-summary_ind$pc)/summary_ind$n_c)))
-                        rd_ind_result = ResponderAnalysisApp::iv_meta(mean = summary_ind$RD, se = summary_ind$SE)
+                        rd_ind_result = respondeR::iv_meta(mean = summary_ind$RD, se = summary_ind$SE)
                         rd_ind = rd_ind_result[1]
                         ci_rd_ind = rd_ind_result[2:3]
                         

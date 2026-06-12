@@ -13,13 +13,13 @@
 #' launch_responder_analysis()
 #' @export
 launch_responder_analysis <- function(...) {
-  app_dir <- system.file("shiny-apps", "ResponderAnalysisApp",
-    package = "ResponderAnalysisApp"
+  app_dir <- system.file("shiny-apps", "ResponderAnalysis",
+    package = "respondeR"
   )
   if (app_dir == "") {
     stop(
       "Could not find the Shiny app directory. Try re-installing ",
-      "`ResponderAnalysisApp`.",
+      "`respondeR`.",
       call. = FALSE
     )
   }
