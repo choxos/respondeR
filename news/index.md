@@ -51,7 +51,7 @@ In response to an external methodology audit:
 - [`launch_responder_analysis()`](https://choxos.github.io/respondeR/reference/launch_responder_analysis.md):
   launches the bundled **ResponderAnalysis** Shiny application
   (direction toggle, method/pooling/interval options, RR/OR/NNT, a
-  per-study forest plot, CLES and CSV/Excel I/O).
+  per-study forest plot, CLES and CSV I/O).
 - `sample_responder_data`: small bundled example dataset.
 - `vas_pain`: a real bundled dataset of 20 exercise-for-spinal-health
   trials pooled on the VAS pain scale (Li et al., 2025,

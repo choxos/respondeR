@@ -145,8 +145,8 @@ individual SE model, `mid_sd` to propagate MID uncertainty, and
 
 ## The Shiny application
 
-The package bundles a point-and-click app: upload data (CSV or Excel) or
-use the example, set the MID and direction, choose methods and options,
+The package bundles a point-and-click app: upload a CSV or use the
+bundled example, set the MID and direction, choose methods and options,
 and view the results table, per-study forest plot and CLES, with CSV
 downloads.
 
