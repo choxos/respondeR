@@ -1,0 +1,37 @@
+citHeader("To cite respondeR in publications, please cite the package and the methodological reference it implements:")
+
+bibentry(
+  bibtype  = "Manual",
+  title    = "{respondeR}: Responder Analysis for Continuous Outcomes",
+  author   = person("Ahmad", "Sofi-Mahmudi"),
+  year     = "2026",
+  note     = "R package version 0.1.0",
+  url      = "https://choxos.github.io/respondeR/"
+)
+
+bibentry(
+  bibtype = "MastersThesis",
+  title   = "Identifying an Optimal Strategy for Converting Pain as a Continuous Outcome to a Responder Analysis",
+  author  = person("Ahmad", "Sofi-Mahmudi"),
+  school  = "McMaster University",
+  year    = "2024",
+  url     = "https://hdl.handle.net/11375/30210"
+)
+
+bibentry(
+  bibtype = "Article",
+  title   = "Pooling health-related quality of life outcomes in meta-analysis: a tutorial and review of methods for enhancing interpretability",
+  author  = c(
+    person("Kristian", "Thorlund"),
+    person("Stephen D.", "Walter"),
+    person("Bradley C.", "Johnston"),
+    person("Toshi A.", "Furukawa"),
+    person("Gordon H.", "Guyatt")
+  ),
+  journal = "Research Synthesis Methods",
+  year    = "2011",
+  volume  = "2",
+  number  = "3",
+  pages   = "188 to 203",
+  doi     = "10.1002/jrsm.46"
+)
