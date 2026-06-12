@@ -1,4 +1,4 @@
-# respondeR
+# respondeR <img src="man/figures/logo.png" align="right" height="139" alt="respondeR hex logo" />
 
 This R package provides a Shiny application for performing responder analysis in clinical trials.
 
