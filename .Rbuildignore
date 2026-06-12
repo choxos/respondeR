@@ -14,3 +14,5 @@
 ^CRAN-SUBMISSION$
 ^README\.Rmd$
 ^\.DS_Store$
+^\.gstack$
+^\.vscode$
