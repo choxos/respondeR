@@ -101,6 +101,11 @@ responder_analysis(sample_responder_data, mid = 1,
   method = "individual", pooling = "random")
 }
 \references{
+Thorlund K, Walter SD, Johnston BC, Furukawa TA, Guyatt GH (2011). Pooling
+health-related quality of life outcomes in meta-analysis -- a tutorial and
+review of methods for enhancing interpretability. \emph{Research Synthesis
+Methods}, 2(3), 188-203. \doi{10.1002/jrsm.46}
+
 Anzures-Cabrera J, Sarpatwari A, Higgins JPT (2011). Expressing findings from
 meta-analyses of continuous outcomes in terms of risks. \emph{Statistics in
 Medicine}, 30(25), 2867-2880. \doi{10.1002/sim.4298}

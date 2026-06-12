@@ -1,2 +1,16 @@
 ^respondeR\.Rproj$
 ^rsconnect$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^data-raw$
+^webapp$
+^\.github$
+^man/figures/generate_logo\.R$
+^cran-comments\.md$
+^\.lintr$
+^LICENSE$
+^LICENSE\.md$
+^CRAN-SUBMISSION$
+^README\.Rmd$
+^\.DS_Store$

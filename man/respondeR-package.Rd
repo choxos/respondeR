@@ -6,7 +6,9 @@
 \alias{respondeR-package}
 \title{respondeR: Responder Analysis for Continuous Outcomes}
 \description{
-A Shiny application for performing responder analysis in clinical trials.
+\if{html}{\figure{logo.svg}{options: style='float: right' alt='logo' width='120'}}
+
+Express meta-analyses of continuous trial outcomes in terms of responder risks, following the interpretability tutorial of Thorlund, Walter, Johnston, Furukawa and Guyatt (2011) \doi{10.1002/jrsm.46}. Given the mean change, standard deviation and sample size per arm across studies, respondeR estimates the proportion of patients who cross a minimal important difference (MID) threshold under a parametric model for the change scores, and contrasts the arms as a risk difference, risk ratio, odds ratio or number needed to treat. It provides median, unweighted-mean, weighted-mean and per-study (fixed- or random-effects) pooling, the standardised-mean-difference to odds-ratio bridge of Anzures-Cabrera, Sarpatwari and Higgins (2011) \doi{10.1002/sim.4298}, a threshold-free common-language effect size, and a point-and-click 'Shiny' application.
 }
 \details{
 The package converts continuous trial outcomes (mean change, standard
@@ -15,20 +17,36 @@ deviation and sample size per arm, across studies) into the proportion of
 difference (MID) threshold -- under a Normal model for the change scores,
 and expresses the between-arm contrast as a risk difference (RD). Four
 pooling strategies are provided (median, unweighted mean, weighted mean and
-individual), following the cut-point ("dichotomisation") approach described
-by Anzures-Cabrera, Sarpatwari and Higgins (2011).
+individual), following the interpretability methods reviewed by Thorlund and
+colleagues (2011) and the cut-point ("dichotomisation") and
+standardised-mean-difference approaches of Anzures-Cabrera, Sarpatwari and
+Higgins (2011).
 
 The statistical engine lives in exported, side-effect-free functions
 (\code{\link[=responder_analysis]{responder_analysis()}}, \code{\link[=responder_proportions]{responder_proportions()}},
-\code{\link[=responder_rd_individual]{responder_rd_individual()}}) so that results are reproducible and unit
-tested independently of the bundled Shiny application
+\code{\link[=responder_rd_individual]{responder_rd_individual()}}, \code{\link[=responder_cles]{responder_cles()}}) so that results are
+reproducible and unit tested independently of the bundled Shiny application
 (\code{\link[=launch_responder_analysis]{launch_responder_analysis()}}).
 }
 \references{
+Thorlund K, Walter SD, Johnston BC, Furukawa TA, Guyatt GH (2011).
+Pooling health-related quality of life outcomes in meta-analysis -- a tutorial
+and review of methods for enhancing interpretability.
+\emph{Research Synthesis Methods}, 2(3), 188-203. \doi{10.1002/jrsm.46}
+
 Anzures-Cabrera J, Sarpatwari A, Higgins JPT (2011).
 Expressing findings from meta-analyses of continuous outcomes in terms of
 risks. \emph{Statistics in Medicine}, 30(25), 2867-2880.
 \doi{10.1002/sim.4298}
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/choxos/respondeR}
+  \item \url{https://choxos.github.io/respondeR/}
+  \item Report bugs at \url{https://github.com/choxos/respondeR/issues}
+}
+
 }
 \author{
 \strong{Maintainer}: Ahmad Sofi-Mahmudi \email{a.sofimahmudi@gmail.com} (\href{https://orcid.org/0000-0001-6829-0823}{ORCID})
