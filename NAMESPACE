@@ -3,6 +3,7 @@
 export(format_responder_results)
 export(launch_responder_analysis)
 export(responder_analysis)
+export(responder_cles)
 export(responder_proportions)
 export(responder_rd_individual)
 importFrom(stats,dnorm)

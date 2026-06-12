@@ -1,132 +1,233 @@
+# Assemble a one-row result with the full, uniform column schema so every
+# method returns the same shape.
+make_row <- function(method, pooling, k, p_e = NA_real_, p_c = NA_real_,
+                     m, het = NULL, var_rd = NA_real_) {
+  het_get <- function(field) if (is.null(het)) NA_real_ else het[[field]]
+  data.frame(
+    method = method, pooling = pooling, k = k,
+    p_e = p_e, p_c = p_c,
+    rd = m$rd, rd_lb = m$rd_lb, rd_ub = m$rd_ub,
+    rr = m$rr, rr_lb = m$rr_lb, rr_ub = m$rr_ub,
+    or = m$or, or_lb = m$or_lb, or_ub = m$or_ub,
+    nnt = m$nnt, nnt_lb = m$nnt_lb, nnt_ub = m$nnt_ub,
+    var_rd = var_rd,
+    tau2 = het_get("tau2"), i2 = het_get("i2"),
+    q = het_get("q"), q_p = het_get("q_p"),
+    pi_lb = het_get("pi_lb"), pi_ub = het_get("pi_ub"),
+    stringsAsFactors = FALSE
+  )
+}
+
+# Select fixed- or random-effect estimate/variance/interval from a pool object.
+pick_pool <- function(pool, pooling, conf_level) {
+  if (pooling == "random") {
+    list(est = pool$est, var = pool$var, lb = pool$ci_lb, ub = pool$ci_ub)
+  } else {
+    z <- stats::qnorm((1 + conf_level) / 2)
+    se <- sqrt(pool$fixed_var)
+    list(est = pool$fixed, var = pool$fixed_var, lb = pool$fixed - z * se, ub = pool$fixed + z * se)
+  }
+}
+
 #' Responder analysis of continuous trial outcomes
 #'
 #' Converts continuous outcomes (mean change, SD and sample size per arm, across
-#' studies) into responder proportions and the between-arm risk difference (RD),
-#' using up to four pooling strategies. Responders are defined by a minimal
-#' important difference (MID) threshold under a Normal model for the change
-#' scores -- the cut-point ("dichotomisation") approach of Anzures-Cabrera,
-#' Sarpatwari and Higgins (2011).
+#' studies) into responder proportions and a range of between-arm effect
+#' measures -- risk difference (RD), risk ratio (RR), odds ratio (OR) and number
+#' needed to treat (NNT) -- under a parametric model for the change scores.
+#' Responders are defined by a minimal important difference (MID) threshold (the
+#' cut-point / "dichotomisation" approach of Anzures-Cabrera, Sarpatwari and
+#' Higgins, 2011). For a threshold-free alternative see [responder_cles()].
 #'
 #' @section Methods:
 #' \describe{
-#'   \item{`individual`}{Dichotomise each study, then pool the per-study RDs by
-#'     fixed-effect inverse variance. The most defensible option; the SE of each
-#'     study's RD is set by `se_method`. Returns a pooled RD with a confidence
-#'     interval; `p_e`/`p_c` are `NA` (they are not single proportions).}
+#'   \item{`individual`}{Dichotomise each study, then pool the per-study effect
+#'     measures (fixed or random effects). The most defensible option; the
+#'     per-study SE follows `se_method`.}
 #'   \item{`weighted`}{Pool the mean change by inverse variance and the SD by the
-#'     within-study pooled SD, dichotomise the pooled summaries, and obtain the
-#'     RD variance by the delta method. Aligned with the pooled-then-dichotomise
-#'     estimator of the reference.}
-#'   \item{`unweighted`}{Dichotomise the arithmetic mean of the study means and
-#'     SDs. A summary with no variance model: the CI is `NA`.}
-#'   \item{`median`}{Dichotomise the median of the study means and SDs. A
-#'     robustness summary with no variance model: the CI is `NA`.}
+#'     within-study pooled SD, dichotomise the pooled summaries, and obtain
+#'     variances by the delta method.}
+#'   \item{`unweighted`, `median`}{Dichotomise the arithmetic mean / median of
+#'     the study means and SDs. Summaries with no variance model: intervals are
+#'     `NA`.}
+#'   \item{`smd`}{Pool the standardised mean difference (Hedges' g), bridge to an
+#'     odds ratio via the logistic link (`lnOR = (pi / sqrt(3)) g`), and combine
+#'     with the weighted-pooled control responder rate to recover risks. The
+#'     second approach of the reference; not included by default.}
 #' }
-#' The control proportion is always computed with the *same* pooling strategy as
-#' the experimental proportion.
+#' The control proportion always uses the same pooling as the experimental arm.
 #'
 #' @param data A data frame with one row per study and columns `study`,
-#'   `change_e`, `sd_e`, `n_e` (experimental arm) and `change_c`, `sd_c`, `n_c`
-#'   (control arm). See [sample_responder_data].
+#'   `change_e`, `sd_e`, `n_e`, `change_c`, `sd_c`, `n_c`. See
+#'   [sample_responder_data].
 #' @param mid Single finite number: the minimal important difference threshold.
-#' @param direction Either `"higher"` (a larger change indicates response) or
-#'   `"lower"` (a smaller change indicates response).
-#' @param method Character vector of methods to compute, any of `"individual"`,
-#'   `"weighted"`, `"unweighted"`, `"median"`. Defaults to all four.
-#' @param se_method Standard-error model for the `"individual"` method:
-#'   `"binomial"` (Wald, the default) or `"delta"` (propagates uncertainty in the
-#'   estimated mean and SD).
-#' @param conf_level Confidence level for the intervals (default `0.95`).
+#' @param direction `"higher"` (a larger change indicates response) or
+#'   `"lower"`.
+#' @param method Methods to compute: any of `"individual"`, `"weighted"`,
+#'   `"unweighted"`, `"median"`, `"smd"`. Defaults to the first four.
+#' @param se_method SE model for `"individual"`: `"binomial"` (default) or
+#'   `"delta"`.
+#' @param pooling `"fixed"` (default) or `"random"` effects, for the
+#'   `"individual"` and `"smd"` methods.
+#' @param tau_method Between-study variance estimator when `pooling = "random"`:
+#'   `"DL"` (DerSimonian-Laird, default) or `"REML"` (needs the `metafor`
+#'   package; falls back to DL with a warning if unavailable).
+#' @param dist Change-score distribution: `"normal"` (default), `"lognormal"`
+#'   or `"t"`.
+#' @param df Degrees of freedom when `dist = "t"`.
+#' @param mid_sd Optional standard deviation of the MID threshold; when `> 0`
+#'   its uncertainty is propagated into the effect-measure variances.
+#' @param ci_type `"wald"` (default) or `"logit"` (keeps proportion and
+#'   risk-difference intervals within valid bounds via the logit transform and
+#'   Newcombe's MOVER method).
+#' @param conf_level Confidence level (default `0.95`).
 #'
-#' @return A data frame with one row per requested method and columns:
-#'   \describe{
-#'     \item{method}{Method name.}
-#'     \item{p_e, p_c}{Experimental and control responder proportions (`[0, 1]`),
-#'       or `NA` for `"individual"`.}
-#'     \item{rd}{Risk difference (`p_e - p_c`), on the `[0, 1]` scale.}
-#'     \item{ci_lb, ci_ub}{Confidence-interval bounds for `rd`, or `NA` when no
-#'       variance model applies (`"median"`, `"unweighted"`).}
-#'     \item{var_rd}{Variance of `rd`, or `NA`.}
-#'     \item{k}{Number of studies.}
-#'   }
-#'   Proportions and risk differences are on the proportion scale; multiply by
-#'   100 for percentages.
+#' @return A data frame with one row per requested method and columns: `method`,
+#'   `pooling`, `k`, `p_e`, `p_c`, `rd`/`rd_lb`/`rd_ub`, `rr`/`rr_lb`/`rr_ub`,
+#'   `or`/`or_lb`/`or_ub`, `nnt`/`nnt_lb`/`nnt_ub`, `var_rd`, and the
+#'   heterogeneity statistics `tau2`, `i2`, `q`, `q_p`, `pi_lb`, `pi_ub` (for the
+#'   pooled methods). Proportions, risk differences and CLES are on the
+#'   proportion scale; multiply by 100 for percentages.
 #'
 #' @references
-#' Anzures-Cabrera J, Sarpatwari A, Higgins JPT (2011).
-#' Expressing findings from meta-analyses of continuous outcomes in terms of
-#' risks. \emph{Statistics in Medicine}, 30(25), 2867-2880.
-#' \doi{10.1002/sim.4298}
+#' Anzures-Cabrera J, Sarpatwari A, Higgins JPT (2011). Expressing findings from
+#' meta-analyses of continuous outcomes in terms of risks. \emph{Statistics in
+#' Medicine}, 30(25), 2867-2880. \doi{10.1002/sim.4298}
 #'
-#' @seealso [responder_rd_individual()], [responder_proportions()]
+#' @seealso [responder_rd_individual()], [responder_cles()],
+#'   [responder_proportions()]
 #'
 #' @examples
 #' responder_analysis(sample_responder_data, mid = 1)
 #'
-#' # Lower change is better, 90% intervals, individual method only:
-#' responder_analysis(
-#'   sample_responder_data,
-#'   mid = 1,
-#'   direction = "lower",
-#'   method = "individual",
-#'   conf_level = 0.90
-#' )
+#' # Random-effects individual method with relative measures:
+#' responder_analysis(sample_responder_data, mid = 1,
+#'   method = "individual", pooling = "random")
 #' @export
 responder_analysis <- function(data, mid,
                                direction = c("higher", "lower"),
-                               method = c("individual", "weighted", "unweighted", "median"),
+                               method = c("individual", "weighted", "unweighted", "median", "smd"),
                                se_method = c("binomial", "delta"),
+                               pooling = c("fixed", "random"),
+                               tau_method = c("DL", "REML"),
+                               dist = c("normal", "lognormal", "t"),
+                               df = NULL,
+                               mid_sd = 0,
+                               ci_type = c("wald", "logit"),
                                conf_level = 0.95) {
   direction <- match.arg(direction)
   se_method <- match.arg(se_method)
-  method <- match.arg(method, several.ok = TRUE)
+  pooling <- match.arg(pooling)
+  tau_method <- match.arg(tau_method)
+  dist <- match.arg(dist)
+  ci_type <- match.arg(ci_type)
+  default_methods <- c("individual", "weighted", "unweighted", "median")
+  if (missing(method)) {
+    method <- default_methods
+  } else {
+    method <- match.arg(method, several.ok = TRUE)
+  }
   validate_mid(mid)
   validate_conf_level(conf_level)
+  if (!is.numeric(mid_sd) || length(mid_sd) != 1L || !is.finite(mid_sd) || mid_sd < 0) {
+    stop("`mid_sd` must be a single non-negative number.", call. = FALSE)
+  }
   data <- validate_responder_data(data)
-
   k <- nrow(data)
   z <- stats::qnorm((1 + conf_level) / 2)
 
-  one_method <- function(m) {
-    if (m == "individual") {
-      per_study <- responder_rd_individual(
-        data, mid,
-        direction = direction, se_method = se_method, conf_level = conf_level
-      )
-      pooled <- iv_pool(per_study$rd, per_study$se^2)
-      se <- sqrt(pooled$var)
-      return(data.frame(
-        method = m, p_e = NA_real_, p_c = NA_real_, rd = pooled$est,
-        ci_lb = pooled$est - z * se, ci_ub = pooled$est + z * se,
-        var_rd = pooled$var, k = k, stringsAsFactors = FALSE
-      ))
-    }
-
-    arm_e <- arm_summary(data$change_e, data$sd_e, data$n_e, method = m)
-    arm_c <- arm_summary(data$change_c, data$sd_c, data$n_c, method = m)
-    p_e <- responder_p(arm_e$mu, arm_e$sigma, mid, direction)
-    p_c <- responder_p(arm_c$mu, arm_c$sigma, mid, direction)
-    rd <- p_e - p_c
-
+  summary_method <- function(m) {
+    arm_e <- arm_summary(data$change_e, data$sd_e, data$n_e, m)
+    arm_c <- arm_summary(data$change_c, data$sd_c, data$n_c, m)
+    ie <- prob_info(arm_e$mu, arm_e$sigma, 2, mid, direction, dist, df)
+    ic <- prob_info(arm_c$mu, arm_c$sigma, 2, mid, direction, dist, df)
+    pe <- ie$p
+    pc <- ic$p
     if (m == "weighted") {
-      a_e <- (arm_e$mu - mid) / arm_e$sigma
-      a_c <- (arm_c$mu - mid) / arm_c$sigma
-      var_pe <- stats::dnorm(a_e)^2 * arm_e$var_mu / arm_e$sigma^2
-      var_pc <- stats::dnorm(a_c)^2 * arm_c$var_mu / arm_c$sigma^2
-      var_rd <- var_pe + var_pc
-      se <- sqrt(var_rd)
-      ci_lb <- rd - z * se
-      ci_ub <- rd + z * se
+      var_pe <- ie$dp_dmu^2 * arm_e$var_mu
+      var_pc <- ic$dp_dmu^2 * arm_c$var_mu
+      mv <- mid_sd^2
+      extra_rd <- (ie$dp_dmid - ic$dp_dmid)^2 * mv
+      extra_lnrr <- (ie$dp_dmid / pe - ic$dp_dmid / pc)^2 * mv
+      extra_lnor <- (ie$dp_dmid / (pe * (1 - pe)) - ic$dp_dmid / (pc * (1 - pc)))^2 * mv
+      meas <- effect_measures(pe, pc, var_pe, var_pc, conf_level, ci_type,
+        extra_rd = extra_rd, extra_lnrr = extra_lnrr, extra_lnor = extra_lnor
+      )
+      var_rd <- var_pe + var_pc + extra_rd
     } else {
+      meas <- effect_measures(pe, pc, NA_real_, NA_real_, conf_level, ci_type)
       var_rd <- NA_real_
-      ci_lb <- NA_real_
-      ci_ub <- NA_real_
     }
+    make_row(m, NA_character_, k, pe, pc, meas, het = NULL, var_rd = var_rd)
+  }
 
-    data.frame(
-      method = m, p_e = p_e, p_c = p_c, rd = rd,
-      ci_lb = ci_lb, ci_ub = ci_ub, var_rd = var_rd, k = k,
-      stringsAsFactors = FALSE
+  individual_method <- function() {
+    ps <- per_study_stats(data, mid, direction, se_method, dist, df, mid_sd)
+    p_rd <- re_pool(ps$rd, ps$var_rd, conf_level, tau_method)
+    p_rr <- re_pool(ps$lnrr, ps$var_lnrr, conf_level, tau_method)
+    p_or <- re_pool(ps$lnor, ps$var_lnor, conf_level, tau_method)
+    s_rd <- pick_pool(p_rd, pooling, conf_level)
+    s_rr <- pick_pool(p_rr, pooling, conf_level)
+    s_or <- pick_pool(p_or, pooling, conf_level)
+    nnt <- nnt_from_rd(s_rd$est, s_rd$lb, s_rd$ub)
+    meas <- list(
+      rd = s_rd$est, rd_lb = s_rd$lb, rd_ub = s_rd$ub,
+      rr = exp(s_rr$est), rr_lb = exp(s_rr$lb), rr_ub = exp(s_rr$ub),
+      or = exp(s_or$est), or_lb = exp(s_or$lb), or_ub = exp(s_or$ub),
+      nnt = nnt$nnt, nnt_lb = nnt$nnt_lb, nnt_ub = nnt$nnt_ub
+    )
+    het <- p_rd
+    if (pooling == "fixed") {
+      het <- modifyList(p_rd, list(pi_lb = NA_real_, pi_ub = NA_real_))
+    }
+    make_row("individual", pooling, k, NA_real_, NA_real_, meas, het, s_rd$var)
+  }
+
+  smd_method <- function() {
+    sgn <- if (direction == "higher") 1 else -1
+    ne <- data$n_e
+    nc <- data$n_c
+    s_pool <- sqrt(((ne - 1) * data$sd_e^2 + (nc - 1) * data$sd_c^2) / (ne + nc - 2))
+    d <- sgn * (data$change_e - data$change_c) / s_pool
+    jc <- 1 - 3 / (4 * (ne + nc) - 9)
+    g <- jc * d
+    var_g <- jc^2 * ((ne + nc) / (ne * nc) + d^2 / (2 * (ne + nc)))
+    p_g <- re_pool(g, var_g, conf_level, tau_method)
+    s_g <- pick_pool(p_g, pooling, conf_level)
+
+    cf <- pi / sqrt(3)
+    ln_or <- cf * s_g$est
+    se_lnor <- cf * sqrt(s_g$var)
+    or <- exp(ln_or)
+    or_lb <- exp(ln_or - z * se_lnor)
+    or_ub <- exp(ln_or + z * se_lnor)
+
+    arm_c <- arm_summary(data$change_c, data$sd_c, data$n_c, "weighted")
+    pc <- responder_p(arm_c$mu, arm_c$sigma, mid, direction, dist, df)
+    pe_from_or <- function(o) o * pc / (1 - pc + o * pc)
+    pe <- pe_from_or(or)
+    rd <- pe - pc
+    rd_lb <- pe_from_or(or_lb) - pc
+    rd_ub <- pe_from_or(or_ub) - pc
+    nnt <- nnt_from_rd(rd, rd_lb, rd_ub)
+    meas <- list(
+      rd = rd, rd_lb = rd_lb, rd_ub = rd_ub,
+      rr = pe / pc, rr_lb = pe_from_or(or_lb) / pc, rr_ub = pe_from_or(or_ub) / pc,
+      or = or, or_lb = or_lb, or_ub = or_ub,
+      nnt = nnt$nnt, nnt_lb = nnt$nnt_lb, nnt_ub = nnt$nnt_ub
+    )
+    het <- p_g
+    if (pooling == "fixed") {
+      het <- modifyList(p_g, list(pi_lb = NA_real_, pi_ub = NA_real_))
+    }
+    make_row("smd", pooling, k, pe, pc, meas, het, var_rd = NA_real_)
+  }
+
+  one_method <- function(m) {
+    switch(m,
+      individual = individual_method(),
+      smd = smd_method(),
+      summary_method(m)
     )
   }
 
@@ -138,42 +239,39 @@ responder_analysis <- function(data, mid,
 #' Format responder-analysis results for display
 #'
 #' Turns the numeric output of [responder_analysis()] into a compact,
-#' display-ready data frame: proportions and risk differences as percentages
-#' and a combined "RD (CI)" string. Used by the bundled Shiny app and handy for
-#' reports.
+#' display-ready data frame: proportions and risk differences as percentages,
+#' the risk ratio and odds ratio with intervals, and a combined "RD (CI)"
+#' string. Used by the bundled Shiny app and handy for reports.
 #'
 #' @param results A data frame returned by [responder_analysis()].
 #' @param digits Number of decimal places (default `1`).
 #'
-#' @return A data frame with character columns `Method`, `PE`, `PC` and
-#'   `RD (95\% CI)` (percentage points; the confidence level shown matches the
-#'   input). Methods without a variance model show the point estimate only.
+#' @return A data frame with character columns `Method`, `PE`, `PC`, `RD`, `RR`
+#'   and `OR` (percentages for proportions/RD; ratios for RR/OR). Methods
+#'   without a variance model show point estimates only.
 #'
 #' @examples
 #' format_responder_results(responder_analysis(sample_responder_data, mid = 1))
 #' @export
 format_responder_results <- function(results, digits = 1) {
   pct <- function(x) ifelse(is.na(x), "-", formatC(100 * x, format = "f", digits = digits))
-  rd_ci <- mapply(function(rd, lb, ub) {
-    if (is.na(lb) || is.na(ub)) {
-      sprintf("%s", pct(rd))
-    } else {
-      sprintf("%s (%s to %s)", pct(rd), pct(lb), pct(ub))
-    }
-  }, results$rd, results$ci_lb, results$ci_ub)
-
+  rat <- function(x) ifelse(is.na(x) | !is.finite(x), "-", formatC(x, format = "f", digits = 2))
+  with_ci <- function(point, lb, ub, fmt) {
+    mapply(function(p, l, u) {
+      if (is.na(l) || is.na(u)) fmt(p) else sprintf("%s (%s to %s)", fmt(p), fmt(l), fmt(u))
+    }, point, lb, ub)
+  }
   labels <- c(
     individual = "Individual", weighted = "Weighted mean",
-    unweighted = "Unweighted mean", median = "Median"
+    unweighted = "Unweighted mean", median = "Median", smd = "SMD (Cox)"
   )
   data.frame(
-    Method = ifelse(results$method %in% names(labels),
-      labels[results$method], results$method
-    ),
+    Method = ifelse(results$method %in% names(labels), labels[results$method], results$method),
     PE = pct(results$p_e),
     PC = pct(results$p_c),
-    RD = rd_ci,
-    stringsAsFactors = FALSE,
-    row.names = NULL
+    RD = with_ci(results$rd, results$rd_lb, results$rd_ub, pct),
+    RR = with_ci(results$rr, results$rr_lb, results$rr_ub, rat),
+    OR = with_ci(results$or, results$or_lb, results$or_ub, rat),
+    stringsAsFactors = FALSE, row.names = NULL
   )
 }

@@ -12,15 +12,15 @@ format_responder_results(results, digits = 1)
 \item{digits}{Number of decimal places (default \code{1}).}
 }
 \value{
-A data frame with character columns \code{Method}, \code{PE}, \code{PC} and
-\verb{RD (95\\\% CI)} (percentage points; the confidence level shown matches the
-input). Methods without a variance model show the point estimate only.
+A data frame with character columns \code{Method}, \code{PE}, \code{PC}, \code{RD}, \code{RR}
+and \code{OR} (percentages for proportions/RD; ratios for RR/OR). Methods
+without a variance model show point estimates only.
 }
 \description{
 Turns the numeric output of \code{\link[=responder_analysis]{responder_analysis()}} into a compact,
-display-ready data frame: proportions and risk differences as percentages
-and a combined "RD (CI)" string. Used by the bundled Shiny app and handy for
-reports.
+display-ready data frame: proportions and risk differences as percentages,
+the risk ratio and odds ratio with intervals, and a combined "RD (CI)"
+string. Used by the bundled Shiny app and handy for reports.
 }
 \examples{
 format_responder_results(responder_analysis(sample_responder_data, mid = 1))

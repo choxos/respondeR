@@ -4,52 +4,51 @@
 \alias{responder_proportions}
 \title{Responder proportions from continuous arm summaries}
 \usage{
-responder_proportions(change, sd, n, mid, direction = c("higher", "lower"))
+responder_proportions(
+  change,
+  sd,
+  n,
+  mid,
+  direction = c("higher", "lower"),
+  dist = c("normal", "lognormal", "t"),
+  df = NULL
+)
 }
 \arguments{
 \item{change}{Numeric vector of mean change scores.}
 
-\item{sd}{Numeric vector of standard deviations (must be \verb{> 0}).}
+\item{sd}{Numeric vector of standard deviations (\verb{> 0}).}
 
-\item{n}{Numeric vector of sample sizes (must be \verb{>= 2}).}
+\item{n}{Numeric vector of sample sizes (\verb{>= 2}).}
 
 \item{mid}{Single finite number: the minimal important difference threshold.}
 
-\item{direction}{Either \code{"higher"} (a larger change indicates response) or
-\code{"lower"} (a smaller change indicates response).}
+\item{direction}{\code{"higher"} (a larger change indicates response) or
+\code{"lower"}.}
+
+\item{dist}{Change-score distribution: \code{"normal"} (default), \code{"lognormal"}
+or \code{"t"}.}
+
+\item{df}{Degrees of freedom when \code{dist = "t"}.}
 }
 \value{
-A data frame with one row per input element and columns:
-\describe{
-\item{p}{Responder probability in \verb{[0, 1]}.}
-\item{var_p}{Delta-method variance of \code{p}.}
-}
+A data frame with one row per input element and columns \code{p}
+(responder probability) and \code{var_p} (delta-method variance).
 }
 \description{
 Estimates, for each study arm, the probability that a patient's change score
-crosses the minimal important difference (MID) threshold under a Normal model
-for the change scores, together with a delta-method variance for that
-probability.
-}
-\details{
-For an arm with mean change \eqn{\mu}, SD \eqn{\sigma} and size \eqn{n}, and
-threshold \eqn{m}, the responder probability is
-\eqn{p = \Phi((\mu - m) / \sigma)} when \code{direction = "higher"} and
-\eqn{p = \Phi((m - \mu) / \sigma)} when \code{direction = "lower"}. The variance is
-obtained by the delta method, propagating the uncertainty in the estimated
-mean (\eqn{\sigma^2 / n}) and SD (\eqn{\sigma^2 / (2(n - 1))}).
+crosses the minimal important difference (MID) threshold under a parametric
+model for the change scores, together with a delta-method (sampling)
+variance for that probability.
 }
 \examples{
 responder_proportions(
-  change = c(0.96, 0.79, 1.02),
-  sd = c(1.26, 1.28, 1.34),
-  n = c(43, 139, 156),
-  mid = 1
+  change = c(0.96, 0.79, 1.02), sd = c(1.26, 1.28, 1.34),
+  n = c(43, 139, 156), mid = 1
 )
 }
 \references{
-Anzures-Cabrera J, Sarpatwari A, Higgins JPT (2011).
-Expressing findings from meta-analyses of continuous outcomes in terms of
-risks. \emph{Statistics in Medicine}, 30(25), 2867-2880.
-\doi{10.1002/sim.4298}
+Anzures-Cabrera J, Sarpatwari A, Higgins JPT (2011). Expressing findings from
+meta-analyses of continuous outcomes in terms of risks. \emph{Statistics in
+Medicine}, 30(25), 2867-2880. \doi{10.1002/sim.4298}
 }
