@@ -70,6 +70,7 @@ so no minimal important difference is required.</p>
 <span>  direction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"higher"</span>, <span class="st">"lower"</span><span class="op">)</span>,</span>
 <span>  pooling <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fixed"</span>, <span class="st">"random"</span><span class="op">)</span>,</span>
 <span>  tau_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DL"</span>, <span class="st">"REML"</span><span class="op">)</span>,</span>
+<span>  ci_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"wald"</span>, <span class="st">"hksj"</span><span class="op">)</span>,</span>
 <span>  conf_level <span class="op">=</span> <span class="fl">0.95</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -94,6 +95,11 @@ so no minimal important difference is required.</p>
 <dt id="arg-tau-method">tau_method<a class="anchor" aria-label="anchor" href="#arg-tau-method"></a></dt>
 <dd><p>Between-study variance estimator for random effects:
 <code>"DL"</code> (default) or <code>"REML"</code>.</p></dd>
+
+
+<dt id="arg-ci-method">ci_method<a class="anchor" aria-label="anchor" href="#arg-ci-method"></a></dt>
+<dd><p>Random-effects interval method: <code>"wald"</code> (default) or
+<code>"hksj"</code> (Hartung-Knapp-Sidik-Jonkman, better for small numbers of studies).</p></dd>
 
 
 <dt id="arg-conf-level">conf_level<a class="anchor" aria-label="anchor" href="#arg-conf-level"></a></dt>

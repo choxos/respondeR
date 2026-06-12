@@ -48,17 +48,17 @@ A data frame with 3 rows and 7 columns:
 responder_analysis(sample_responder_data, mid = 1)
 #>       method pooling k       p_e       p_c        rd     rd_lb     rd_ub
 #> 1 individual   fixed 3        NA        NA 0.2554475 0.1869705 0.3239244
-#> 2   weighted    <NA> 3 0.4742782 0.2205372 0.2537410 0.2012903 0.3061917
+#> 2   weighted    <NA> 3 0.4742782 0.2205372 0.2537410 0.1985865 0.3088955
 #> 3 unweighted    <NA> 3 0.4767051 0.2279613 0.2487438        NA        NA
 #> 4     median    <NA> 3 0.4869694 0.2150781 0.2718912        NA        NA
 #>         rr    rr_lb    rr_ub       or    or_lb    or_ub      nnt   nnt_lb
 #> 1 2.148809 1.712779 2.695841 3.198098 2.296864 4.452953 3.914699 3.087140
-#> 2 2.150558 1.821290 2.539355 3.188531 2.489707 4.083504 3.941027 3.265928
+#> 2 2.150558 1.790679 2.582764 3.188531 2.442773 4.161963 3.941027 3.237341
 #> 3 2.091167       NA       NA 3.085185       NA       NA 4.020201       NA
 #> 4 2.264151       NA       NA 3.464085       NA       NA 3.677941       NA
 #>     nnt_ub       var_rd tau2 i2      q       q_p pi_lb pi_ub
 #> 1 5.348437 0.0012206534    0  0 1.6054 0.4481173    NA    NA
-#> 2 4.967949 0.0007161536   NA NA     NA        NA    NA    NA
+#> 2 5.035589 0.0007918911   NA NA     NA        NA    NA    NA
 #> 3       NA           NA   NA NA     NA        NA    NA    NA
 #> 4       NA           NA   NA NA     NA        NA    NA    NA
 ```

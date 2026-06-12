@@ -137,8 +137,18 @@ mean and SD through the Normal CDF,
 \frac{a^2}{2(n-1)}\right]</annotation></semantics></math> with
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo>=</mo><mo stretchy="false" form="prefix">(</mo><mi>μ</mi><mo>−</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mi>σ</mi></mrow><annotation encoding="application/x-tex">a = (\mu - m)/\sigma</annotation></semantics></math>.</li>
 </ul>
-<p>This is the most defensible method because it respects each study’s
-own scale.</p>
+<p>The <code>"binomial"</code> form is a <em>pseudo-binomial</em>
+approximation:
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mrow><mi>e</mi><mo>,</mo><mi>i</mi></mrow></msub><annotation encoding="application/x-tex">p_{e,i}</annotation></semantics></math>
+and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mrow><mi>c</mi><mo>,</mo><mi>i</mi></mrow></msub><annotation encoding="application/x-tex">p_{c,i}</annotation></semantics></math>
+are probabilities implied by the estimated mean and SD, not proportions
+of observed dichotomized patients, so it does not carry the uncertainty
+in the reported mean and SD. The <code>"delta"</code> form does, and is
+generally preferable for summary-statistic inputs;
+<code>"binomial"</code> is the default only for continuity with earlier
+results. This is the most defensible method because it respects each
+study’s own scale.</p>
 </div>
 <div class="section level3">
 <h3 id="weighted-mean">Weighted mean<a class="anchor" aria-label="anchor" href="#weighted-mean"></a>
@@ -153,9 +163,18 @@ s^{\star} = \sqrt{\frac{\sum_i (n_i - 1)\, s_i^2}{\sum_i (n_i - 1)}}.
 <p>Then
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>p</mi><mo>⋆</mo></msup><mo>=</mo><mi mathvariant="normal">Φ</mi><mo stretchy="false" form="prefix">(</mo><mo stretchy="false" form="prefix">(</mo><msup><mover><mi>d</mi><mo accent="true">‾</mo></mover><mo>⋆</mo></msup><mo>−</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><msup><mi>s</mi><mo>⋆</mo></msup><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">p^{\star} = \Phi((\bar d^{\star} - m)/s^{\star})</annotation></semantics></math>
 and the risk-difference variance comes from the delta method,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">V</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">r</mi></mrow><mo stretchy="false" form="prefix">(</mo><msup><mi>p</mi><mo>⋆</mo></msup><mo stretchy="false" form="postfix">)</mo><mo>≈</mo><mi>ϕ</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>z</mi><mo>⋆</mo></msup><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup><mspace width="0.167em"></mspace><mrow><mi mathvariant="normal">V</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">r</mi></mrow><mo stretchy="false" form="prefix">(</mo><msup><mover><mi>d</mi><mo accent="true">‾</mo></mover><mo>⋆</mo></msup><mo stretchy="false" form="postfix">)</mo><mi>/</mi><msup><mi>s</mi><mrow><mi>⋆</mi><mn>2</mn></mrow></msup></mrow><annotation encoding="application/x-tex">\mathrm{Var}(p^{\star}) \approx \phi(z^{\star})^2\,
-\mathrm{Var}(\bar d^{\star}) / s^{\star 2}</annotation></semantics></math>.
-This is the paper-aligned “pool-then-dichotomize” estimator.</p>
+propagating uncertainty in <strong>both</strong> the pooled mean and the
+pooled SD,
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">V</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">r</mi></mrow><mo stretchy="false" form="prefix">(</mo><msup><mi>p</mi><mo>⋆</mo></msup><mo stretchy="false" form="postfix">)</mo><mo>≈</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mrow><mi>∂</mi><msup><mi>p</mi><mo>⋆</mo></msup></mrow><mrow><mi>∂</mi><mi>μ</mi></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mrow><mi mathvariant="normal">V</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">r</mi></mrow><mo stretchy="false" form="prefix">(</mo><msup><mover><mi>d</mi><mo accent="true">‾</mo></mover><mo>⋆</mo></msup><mo stretchy="false" form="postfix">)</mo><mo>+</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mrow><mi>∂</mi><msup><mi>p</mi><mo>⋆</mo></msup></mrow><mrow><mi>∂</mi><mi>σ</mi></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mrow><mi mathvariant="normal">V</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">r</mi></mrow><mo stretchy="false" form="prefix">(</mo><msup><mi>s</mi><mo>⋆</mo></msup><mo stretchy="false" form="postfix">)</mo><mo>,</mo><mspace width="2.0em"></mspace><mrow><mi mathvariant="normal">V</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">r</mi></mrow><mo stretchy="false" form="prefix">(</mo><msup><mi>s</mi><mo>⋆</mo></msup><mo stretchy="false" form="postfix">)</mo><mo>≈</mo><mfrac><msup><mi>s</mi><mrow><mi>⋆</mi><mn>2</mn></mrow></msup><mrow><mn>2</mn><munder><mo>∑</mo><mi>i</mi></munder><mo stretchy="false" form="prefix">(</mo><msub><mi>n</mi><mi>i</mi></msub><mo>−</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo></mrow></mfrac><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\mathrm{Var}(p^{\star}) \approx
+\left(\frac{\partial p^{\star}}{\partial \mu}\right)^2 \mathrm{Var}(\bar d^{\star})
++ \left(\frac{\partial p^{\star}}{\partial \sigma}\right)^2 \mathrm{Var}(s^{\star}),
+\qquad
+\mathrm{Var}(s^{\star}) \approx \frac{s^{\star 2}}{2 \sum_i (n_i - 1)} .
+</annotation></semantics></math> Including the SD term keeps this method
+consistent with the individual delta method and avoids intervals that
+are too narrow. This is the paper-aligned “pool-then-dichotomize”
+estimator.</p>
 </div>
 <div class="section level3">
 <h3 id="unweighted-mean-and-median">Unweighted mean and median<a class="anchor" aria-label="anchor" href="#unweighted-mean-and-median"></a>
@@ -170,7 +189,7 @@ confidence interval.</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"method"</span>, <span class="st">"p_e"</span>, <span class="st">"p_c"</span>, <span class="st">"rd"</span>, <span class="st">"rd_lb"</span>, <span class="st">"rd_ub"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;       method       p_e       p_c        rd     rd_lb     rd_ub</span></span>
 <span><span class="co">#&gt; 1 individual        NA        NA 0.2554475 0.1869705 0.3239244</span></span>
-<span><span class="co">#&gt; 2   weighted 0.4742782 0.2205372 0.2537410 0.2012903 0.3061917</span></span>
+<span><span class="co">#&gt; 2   weighted 0.4742782 0.2205372 0.2537410 0.1985865 0.3088955</span></span>
 <span><span class="co">#&gt; 3 unweighted 0.4767051 0.2279613 0.2487438        NA        NA</span></span>
 <span><span class="co">#&gt; 4     median 0.4869694 0.2150781 0.2718912        NA        NA</span></span></code></pre></div>
 <p>The control proportion is always computed with the
@@ -266,6 +285,28 @@ critical value and are unstable for very few studies; interpret them
 cautiously when
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
 is small.</p>
+<p>For the pooled confidence interval itself, the default Normal (Wald)
+interval can under-cover when
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
+is small, because
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>τ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\tau^2</annotation></semantics></math>
+is poorly estimated. Set <code>ci_method = "hksj"</code> for the
+Hartung-Knapp-Sidik-Jonkman interval, a
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>-based
+interval whose width adapts to the observed dispersion of the study
+estimates and which is better calibrated for few-study meta-analyses
+(Rover, Knapp &amp; Friede, 2015). The example below has only three
+studies, exactly where this matters.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span>
+<span>  wald <span class="op">=</span> <span class="fu"><a href="../reference/responder_analysis.html">responder_analysis</a></span><span class="op">(</span><span class="va">sample_responder_data</span>, mid <span class="op">=</span> <span class="fl">1</span>, method <span class="op">=</span> <span class="st">"individual"</span>,</span>
+<span>                            pooling <span class="op">=</span> <span class="st">"random"</span>, ci_method <span class="op">=</span> <span class="st">"wald"</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rd"</span>, <span class="st">"rd_lb"</span>, <span class="st">"rd_ub"</span><span class="op">)</span><span class="op">]</span>,</span>
+<span>  hksj <span class="op">=</span> <span class="fu"><a href="../reference/responder_analysis.html">responder_analysis</a></span><span class="op">(</span><span class="va">sample_responder_data</span>, mid <span class="op">=</span> <span class="fl">1</span>, method <span class="op">=</span> <span class="st">"individual"</span>,</span>
+<span>                            pooling <span class="op">=</span> <span class="st">"random"</span>, ci_method <span class="op">=</span> <span class="st">"hksj"</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rd"</span>, <span class="st">"rd_lb"</span>, <span class="st">"rd_ub"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt;             rd     rd_lb     rd_ub</span></span>
+<span><span class="co">#&gt; wald 0.2554475 0.1869705 0.3239244</span></span>
+<span><span class="co">#&gt; hksj 0.2554475 0.1207656 0.3901293</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="refinements">Refinements<a class="anchor" aria-label="anchor" href="#refinements"></a>
@@ -290,12 +331,20 @@ change scores can be modeled as lognormal or
 Student-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
 instead of Normal, as a sensitivity analysis for skewed or heavy-tailed
 data (variances are obtained numerically).</li>
+<li>
+<strong>Boundary handling.</strong> A MID far from the observed
+means can make a responder probability equal to exactly 0 or 1, which
+would make log ratios, logits and inverse-variance weights non-finite.
+respondeR reports the proportions and the risk difference unclamped, but
+clamps the probabilities that feed ratios, logs and variances away from
+0 and 1 by a tiny amount, so a sensitivity sweep over the MID returns
+finite (if wide) results instead of failing.</li>
 </ul>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/responder_analysis.html">responder_analysis</a></span><span class="op">(</span><span class="va">sample_responder_data</span>, mid <span class="op">=</span> <span class="fl">1</span>, method <span class="op">=</span> <span class="st">"weighted"</span>,</span>
 <span>                   ci_type <span class="op">=</span> <span class="st">"logit"</span>, mid_sd <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rd"</span>, <span class="st">"rd_lb"</span>, <span class="st">"rd_ub"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;         rd     rd_lb     rd_ub</span></span>
-<span><span class="co">#&gt; 1 0.253741 0.1939542 0.3135277</span></span></code></pre></div>
+<span><span class="co">#&gt; 1 0.253741 0.1915687 0.3159133</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="assumptions-and-limitations">Assumptions and limitations<a class="anchor" aria-label="anchor" href="#assumptions-and-limitations"></a>
@@ -388,6 +437,10 @@ effect size for use in meta-analysis. <em>Statistics in Medicine</em>,
 19(22), 3127 to 3131.</p>
 <p>McGraw, K. O., &amp; Wong, S. P. (1992). A common language effect
 size statistic. <em>Psychological Bulletin</em>, 111(2), 361 to 365.</p>
+<p>Rover, C., Knapp, G., &amp; Friede, T. (2015).
+Hartung-Knapp-Sidik-Jonkman approach and its modification for
+random-effects meta-analysis with few studies. <em>BMC Medical Research
+Methodology</em>, 15, 99. <a href="doi:10.1186/s12874-015-0091-1" class="uri">doi:10.1186/s12874-015-0091-1</a></p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

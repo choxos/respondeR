@@ -85,8 +85,14 @@ interval. Building block for the <code>"individual"</code> method of
 
 
 <dt id="arg-se-method">se_method<a class="anchor" aria-label="anchor" href="#arg-se-method"></a></dt>
-<dd><p>SE model for <code>"individual"</code>: <code>"binomial"</code> (default) or
-<code>"delta"</code>.</p></dd>
+<dd><p>Per-study SE model for <code>"individual"</code>: <code>"binomial"</code>
+(default) or <code>"delta"</code>. The <code>"binomial"</code> variance <code>p(1 - p) / n</code> is a
+pseudo-binomial approximation: <code>p</code> is a probability implied by the estimated
+mean and SD, not a proportion of observed dichotomized patients, so it does
+not include the uncertainty in the reported mean and SD. <code>"delta"</code>
+propagates that uncertainty and is generally preferable for
+summary-statistic inputs; <code>"binomial"</code> is the default only for continuity
+with earlier results.</p></dd>
 
 
 <dt id="arg-conf-level">conf_level<a class="anchor" aria-label="anchor" href="#arg-conf-level"></a></dt>

@@ -17,6 +17,7 @@ responder_cles(
   direction = c("higher", "lower"),
   pooling = c("fixed", "random"),
   tau_method = c("DL", "REML"),
+  ci_method = c("wald", "hksj"),
   conf_level = 0.95
 )
 ```
@@ -41,6 +42,11 @@ responder_cles(
 
   Between-study variance estimator for random effects: `"DL"` (default)
   or `"REML"`.
+
+- ci_method:
+
+  Random-effects interval method: `"wald"` (default) or `"hksj"`
+  (Hartung-Knapp-Sidik-Jonkman, better for small numbers of studies).
 
 - conf_level:
 

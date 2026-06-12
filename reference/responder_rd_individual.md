@@ -39,7 +39,14 @@ responder_rd_individual(
 
 - se_method:
 
-  SE model for `"individual"`: `"binomial"` (default) or `"delta"`.
+  Per-study SE model for `"individual"`: `"binomial"` (default) or
+  `"delta"`. The `"binomial"` variance `p(1 - p) / n` is a
+  pseudo-binomial approximation: `p` is a probability implied by the
+  estimated mean and SD, not a proportion of observed dichotomized
+  patients, so it does not include the uncertainty in the reported mean
+  and SD. `"delta"` propagates that uncertainty and is generally
+  preferable for summary-statistic inputs; `"binomial"` is the default
+  only for continuity with earlier results.
 
 - conf_level:
 

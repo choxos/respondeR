@@ -53,7 +53,7 @@ res <- responder_analysis(sample_responder_data, mid = 1)
 res[, c("method", "p_e", "p_c", "rd", "rd_lb", "rd_ub", "rr", "or", "nnt")]
 #>       method       p_e       p_c        rd     rd_lb     rd_ub       rr
 #> 1 individual        NA        NA 0.2554475 0.1869705 0.3239244 2.148809
-#> 2   weighted 0.4742782 0.2205372 0.2537410 0.2012903 0.3061917 2.150558
+#> 2   weighted 0.4742782 0.2205372 0.2537410 0.1985865 0.3088955 2.150558
 #> 3 unweighted 0.4767051 0.2279613 0.2487438        NA        NA 2.091167
 #> 4     median 0.4869694 0.2150781 0.2718912        NA        NA 2.264151
 #>         or      nnt
@@ -78,12 +78,12 @@ For a quick, readable summary use
 format_responder_results(res)
 #>            Method   PE   PC                  RD                  RR
 #> 1      Individual    -    - 25.5 (18.7 to 32.4) 2.15 (1.71 to 2.70)
-#> 2   Weighted mean 47.4 22.1 25.4 (20.1 to 30.6) 2.15 (1.82 to 2.54)
+#> 2   Weighted mean 47.4 22.1 25.4 (19.9 to 30.9) 2.15 (1.79 to 2.58)
 #> 3 Unweighted mean 47.7 22.8                24.9                2.09
 #> 4          Median 48.7 21.5                27.2                2.26
 #>                    OR
 #> 1 3.20 (2.30 to 4.45)
-#> 2 3.19 (2.49 to 4.08)
+#> 2 3.19 (2.44 to 4.16)
 #> 3                3.09
 #> 4                3.46
 ```

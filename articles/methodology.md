@@ -57,8 +57,13 @@ The per-study variance follows `se_method`:
   $`\widehat{\mathrm{Var}}(p) = \phi(a)^2\left[\frac{1}{n} +
   \frac{a^2}{2(n-1)}\right]`$ with $`a = (\mu - m)/\sigma`$.
 
-This is the most defensible method because it respects each study’s own
-scale.
+The `"binomial"` form is a *pseudo-binomial* approximation: $`p_{e,i}`$
+and $`p_{c,i}`$ are probabilities implied by the estimated mean and SD,
+not proportions of observed dichotomized patients, so it does not carry
+the uncertainty in the reported mean and SD. The `"delta"` form does,
+and is generally preferable for summary-statistic inputs; `"binomial"`
+is the default only for continuity with earlier results. This is the
+most defensible method because it respects each study’s own scale.
 
 ### Weighted mean
 
@@ -72,10 +77,18 @@ s^{\star} = \sqrt{\frac{\sum_i (n_i - 1)\, s_i^2}{\sum_i (n_i - 1)}}.
 ```
 
 Then $`p^{\star} = \Phi((\bar d^{\star} - m)/s^{\star})`$ and the
-risk-difference variance comes from the delta method,
-$`\mathrm{Var}(p^{\star}) \approx \phi(z^{\star})^2\,
-\mathrm{Var}(\bar d^{\star}) / s^{\star 2}`$. This is the paper-aligned
-“pool-then-dichotomize” estimator.
+risk-difference variance comes from the delta method, propagating
+uncertainty in **both** the pooled mean and the pooled SD,
+``` math
+\mathrm{Var}(p^{\star}) \approx
+\left(\frac{\partial p^{\star}}{\partial \mu}\right)^2 \mathrm{Var}(\bar d^{\star})
++ \left(\frac{\partial p^{\star}}{\partial \sigma}\right)^2 \mathrm{Var}(s^{\star}),
+\qquad
+\mathrm{Var}(s^{\star}) \approx \frac{s^{\star 2}}{2 \sum_i (n_i - 1)} .
+```
+Including the SD term keeps this method consistent with the individual
+delta method and avoids intervals that are too narrow. This is the
+paper-aligned “pool-then-dichotomize” estimator.
 
 ### Unweighted mean and median
 
@@ -90,7 +103,7 @@ responder_analysis(sample_responder_data, mid = 1)[,
   c("method", "p_e", "p_c", "rd", "rd_lb", "rd_ub")]
 #>       method       p_e       p_c        rd     rd_lb     rd_ub
 #> 1 individual        NA        NA 0.2554475 0.1869705 0.3239244
-#> 2   weighted 0.4742782 0.2205372 0.2537410 0.2012903 0.3061917
+#> 2   weighted 0.4742782 0.2205372 0.2537410 0.1985865 0.3088955
 #> 3 unweighted 0.4767051 0.2279613 0.2487438        NA        NA
 #> 4     median 0.4869694 0.2150781 0.2718912        NA        NA
 ```
@@ -184,6 +197,28 @@ responder_analysis(sample_responder_data, mid = 1, method = "individual",
 Prediction intervals use a $`t_{k-2}`$ critical value and are unstable
 for very few studies; interpret them cautiously when $`k`$ is small.
 
+For the pooled confidence interval itself, the default Normal (Wald)
+interval can under-cover when $`k`$ is small, because $`\tau^2`$ is
+poorly estimated. Set `ci_method = "hksj"` for the
+Hartung-Knapp-Sidik-Jonkman interval, a $`t`$-based interval whose width
+adapts to the observed dispersion of the study estimates and which is
+better calibrated for few-study meta-analyses (Rover, Knapp & Friede,
+2015). The example below has only three studies, exactly where this
+matters.
+
+``` r
+
+rbind(
+  wald = responder_analysis(sample_responder_data, mid = 1, method = "individual",
+                            pooling = "random", ci_method = "wald")[, c("rd", "rd_lb", "rd_ub")],
+  hksj = responder_analysis(sample_responder_data, mid = 1, method = "individual",
+                            pooling = "random", ci_method = "hksj")[, c("rd", "rd_lb", "rd_ub")]
+)
+#>             rd     rd_lb     rd_ub
+#> wald 0.2554475 0.1869705 0.3239244
+#> hksj 0.2554475 0.1207656 0.3901293
+```
+
 ## Refinements
 
 - **Bounded intervals** (`ci_type = "logit"`). Proportion intervals are
@@ -198,13 +233,20 @@ for very few studies; interpret them cautiously when $`k`$ is small.
   modeled as lognormal or Student-$`t`$ instead of Normal, as a
   sensitivity analysis for skewed or heavy-tailed data (variances are
   obtained numerically).
+- **Boundary handling.** A MID far from the observed means can make a
+  responder probability equal to exactly 0 or 1, which would make log
+  ratios, logits and inverse-variance weights non-finite. respondeR
+  reports the proportions and the risk difference unclamped, but clamps
+  the probabilities that feed ratios, logs and variances away from 0 and
+  1 by a tiny amount, so a sensitivity sweep over the MID returns finite
+  (if wide) results instead of failing.
 
 ``` r
 
 responder_analysis(sample_responder_data, mid = 1, method = "weighted",
                    ci_type = "logit", mid_sd = 0.2)[, c("rd", "rd_lb", "rd_ub")]
 #>         rd     rd_lb     rd_ub
-#> 1 0.253741 0.1939542 0.3135277
+#> 1 0.253741 0.1915687 0.3159133
 ```
 
 ## Assumptions and limitations
@@ -259,3 +301,8 @@ size for use in meta-analysis. *Statistics in Medicine*, 19(22), 3127 to
 
 McGraw, K. O., & Wong, S. P. (1992). A common language effect size
 statistic. *Psychological Bulletin*, 111(2), 361 to 365.
+
+Rover, C., Knapp, G., & Friede, T. (2015). Hartung-Knapp-Sidik-Jonkman
+approach and its modification for random-effects meta-analysis with few
+studies. *BMC Medical Research Methodology*, 15, 99.
+<doi:10.1186/s12874-015-0091-1>

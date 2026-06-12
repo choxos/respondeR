@@ -7,6 +7,29 @@ release rebuilds it as a documented, tested R package with the
 statistics in pure, exported functions and the Shiny app as a thin front
 end.
 
+### Robustness and methodology hardening
+
+In response to an external methodology audit:
+
+- **Boundary handling.** Extreme MIDs that push a responder probability
+  to exactly 0 or 1 no longer crash or return infinite intervals;
+  probabilities are clamped away from 0 and 1 only where they feed logs,
+  logits and weights, while the reported proportions and risk difference
+  stay unclamped.
+- **Small-study random effects.** Added `ci_method = "hksj"` for the
+  Hartung-Knapp-Sidik-Jonkman interval, better calibrated than Wald when
+  the number of studies is small.
+- **Weighted-method variance** now propagates uncertainty in the pooled
+  SD as well as the pooled mean (full delta method), so its intervals
+  are no longer too narrow. Weighted confidence intervals are slightly
+  wider than in the first build; the point estimates are unchanged.
+- **Stricter validation.** Sample sizes must be whole numbers; the
+  lognormal model now rejects negative study-arm mean changes before
+  aggregation; and the vector building blocks reject non-finite
+  `sd`/`n`.
+- The `binomial` SE is documented as a pseudo-binomial approximation,
+  with `delta` recommended for summary-statistic inputs.
+
 ### Features
 
 - [`responder_analysis()`](https://choxos.github.io/respondeR/reference/responder_analysis.md):

@@ -41,6 +41,19 @@
 <h2 class="pkg-version" data-toc-text="0.1.0" id="responder-010">respondeR 0.1.0<a class="anchor" aria-label="anchor" href="#responder-010"></a></h2>
 <p>First public release. The package began life as a small Shiny app; this release rebuilds it as a documented, tested R package with the statistics in pure, exported functions and the Shiny app as a thin front end.</p>
 <div class="section level3">
+<h3 id="robustness-and-methodology-hardening-0-1-0">Robustness and methodology hardening<a class="anchor" aria-label="anchor" href="#robustness-and-methodology-hardening-0-1-0"></a></h3>
+<p>In response to an external methodology audit:</p>
+<ul><li>
+<strong>Boundary handling.</strong> Extreme MIDs that push a responder probability to exactly 0 or 1 no longer crash or return infinite intervals; probabilities are clamped away from 0 and 1 only where they feed logs, logits and weights, while the reported proportions and risk difference stay unclamped.</li>
+<li>
+<strong>Small-study random effects.</strong> Added <code>ci_method = "hksj"</code> for the Hartung-Knapp-Sidik-Jonkman interval, better calibrated than Wald when the number of studies is small.</li>
+<li>
+<strong>Weighted-method variance</strong> now propagates uncertainty in the pooled SD as well as the pooled mean (full delta method), so its intervals are no longer too narrow. Weighted confidence intervals are slightly wider than in the first build; the point estimates are unchanged.</li>
+<li>
+<strong>Stricter validation.</strong> Sample sizes must be whole numbers; the lognormal model now rejects negative study-arm mean changes before aggregation; and the vector building blocks reject non-finite <code>sd</code>/<code>n</code>.</li>
+<li>The <code>binomial</code> SE is documented as a pseudo-binomial approximation, with <code>delta</code> recommended for summary-statistic inputs.</li>
+</ul></div>
+<div class="section level3">
 <h3 id="features-0-1-0">Features<a class="anchor" aria-label="anchor" href="#features-0-1-0"></a></h3>
 <ul><li>
 <code><a href="../reference/responder_analysis.html">responder_analysis()</a></code>: the main entry point. Converts continuous arm summaries (mean change, SD, n) into responder proportions and a tidy table of between-arm effect measures: risk difference, risk ratio, odds ratio and number needed to treat. Pooling methods: <code>"individual"</code>, <code>"weighted"</code>, <code>"unweighted"</code>, <code>"median"</code> and <code>"smd"</code>.</li>

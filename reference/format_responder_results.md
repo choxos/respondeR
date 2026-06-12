@@ -36,12 +36,12 @@ a variance model show point estimates only.
 format_responder_results(responder_analysis(sample_responder_data, mid = 1))
 #>            Method   PE   PC                  RD                  RR
 #> 1      Individual    -    - 25.5 (18.7 to 32.4) 2.15 (1.71 to 2.70)
-#> 2   Weighted mean 47.4 22.1 25.4 (20.1 to 30.6) 2.15 (1.82 to 2.54)
+#> 2   Weighted mean 47.4 22.1 25.4 (19.9 to 30.9) 2.15 (1.79 to 2.58)
 #> 3 Unweighted mean 47.7 22.8                24.9                2.09
 #> 4          Median 48.7 21.5                27.2                2.26
 #>                    OR
 #> 1 3.20 (2.30 to 4.45)
-#> 2 3.19 (2.49 to 4.08)
+#> 2 3.19 (2.44 to 4.16)
 #> 3                3.09
 #> 4                3.46
 ```
