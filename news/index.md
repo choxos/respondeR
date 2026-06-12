@@ -75,6 +75,14 @@ In response to an external methodology audit:
   MOVER risk-difference intervals (`ci_type = "logit"`); propagation of
   uncertainty in the MID threshold (`mid_sd`); alternative change-score
   distributions (`dist = "lognormal"` or `"t"`).
+- **Baseline-risk option.** `control = "median"` takes the control
+  responder proportion from the median control arm for every summary
+  method (the Sofi-Mahmudi 2024 simulation baseline), while still
+  pooling the experimental arm by the chosen method; the default
+  `control = "matched"` pools the control arm the same way as the
+  experimental arm. Because the median control arm has no
+  sampling-variance model, `control = "median"` returns point estimates
+  only.
 
 ### Statistical corrections (results differ from the previous app)
 
@@ -83,9 +91,11 @@ Numbers from the weighted and unweighted methods, and all confidence
 intervals, will differ from that app; the individual and median point
 estimates are unchanged.
 
-- The control responder proportion is now computed with the **same**
-  pooling as the experimental arm (previously every method reused the
-  *median* method’s control proportion).
+- The control responder proportion is, by default, computed with the
+  **same** pooling as the experimental arm (previously every method
+  reused the *median* method’s control proportion). The earlier
+  median-baseline behavior remains available as an explicit, documented
+  choice via `control = "median"`.
 - The weighted method now pools the SD with the within-study pooled SD
   `sqrt(sum((n-1) sd^2) / sum(n-1))` rather than inverse-variance
   pooling of SDs, with a delta-method variance for the risk difference.

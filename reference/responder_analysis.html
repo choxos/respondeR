@@ -69,6 +69,7 @@ Higgins, 2011). For a threshold-free alternative see <code><a href="responder_cl
 <span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"individual"</span>, <span class="st">"weighted"</span>, <span class="st">"unweighted"</span>, <span class="st">"median"</span>, <span class="st">"smd"</span><span class="op">)</span>,</span>
 <span>  se_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"binomial"</span>, <span class="st">"delta"</span><span class="op">)</span>,</span>
 <span>  pooling <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fixed"</span>, <span class="st">"random"</span><span class="op">)</span>,</span>
+<span>  control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"matched"</span>, <span class="st">"median"</span><span class="op">)</span>,</span>
 <span>  tau_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"DL"</span>, <span class="st">"REML"</span><span class="op">)</span>,</span>
 <span>  dist <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"normal"</span>, <span class="st">"lognormal"</span>, <span class="st">"t"</span><span class="op">)</span>,</span>
 <span>  df <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -117,6 +118,15 @@ with earlier results.</p></dd>
 <dt id="arg-pooling">pooling<a class="anchor" aria-label="anchor" href="#arg-pooling"></a></dt>
 <dd><p><code>"fixed"</code> (default) or <code>"random"</code> effects, for the
 <code>"individual"</code> and <code>"smd"</code> methods.</p></dd>
+
+
+<dt id="arg-control">control<a class="anchor" aria-label="anchor" href="#arg-control"></a></dt>
+<dd><p>Baseline-risk rule for the summary methods (<code>median</code>,
+<code>unweighted</code>, <code>weighted</code>): <code>"matched"</code> (default) pools the control arm the
+same way as the experimental arm; <code>"median"</code> always takes the control
+responder proportion from the median control arm (the Sofi-Mahmudi 2024
+baseline), which yields point estimates only. Ignored by <code>"individual"</code> and
+<code>"smd"</code>.</p></dd>
 
 
 <dt id="arg-tau-method">tau_method<a class="anchor" aria-label="anchor" href="#arg-tau-method"></a></dt>
@@ -190,7 +200,15 @@ with the weighted-pooled control responder rate to recover risks. The
 second approach of the reference; not included by default.</p></dd>
 
 
-</dl><p>The control proportion always uses the same pooling as the experimental arm.</p>
+</dl><p>For the summary methods (<code>median</code>, <code>unweighted</code>, <code>weighted</code>) the control
+proportion is, by default, pooled the same way as the experimental arm
+(<code>control = "matched"</code>). Set <code>control = "median"</code> to instead take the baseline
+risk from the median control arm for every summary method, as in the
+Sofi-Mahmudi (2024) simulation study; the experimental arm is still pooled by
+the chosen method. Because the median control arm carries no sampling-variance
+model, <code>control = "median"</code> reports point estimates only (no intervals) for
+the summary methods. The <code>individual</code> and <code>smd</code> methods pool per-study
+contrasts and ignore <code>control</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>

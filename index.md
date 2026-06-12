@@ -117,8 +117,13 @@ summaries are pooled across studies before, or after, dichotomizing.
 | `median` | Median of study means/SDs | None | Robustness summary (point estimate) |
 | `smd` | Standardized mean difference to odds ratio | Delta method | Cox logistic bridge; opt-in |
 
-The control proportion always uses the **same** pooling as the
-experimental arm.
+For the summary methods the control proportion uses the **same** pooling
+as the experimental arm by default (`control = "matched"`). Set
+`control = "median"` to take the baseline risk from the median control
+arm for every summary method, as in the simulation study of Sofi-Mahmudi
+(2024); the experimental arm is still pooled by the chosen method, and
+the result is then a point estimate (the median control arm carries no
+variance model).
 
 **Effect measures.** Every method that yields proportions reports the
 absolute **risk difference**, the relative **risk ratio** and **odds
@@ -127,10 +132,11 @@ ratio**, and the **number needed to treat**.
 adds the threshold-free **common-language effect size** (probabilistic
 index).
 
-**Options.** `pooling = "random"` (DerSimonian-Laird or REML),
-`ci_type = "logit"` for bounded intervals, `se_method` for the
-individual SE model, `mid_sd` to propagate MID uncertainty, and
-`dist = "lognormal"`/`"t"` for non-Normal change scores.
+**Options.** `pooling = "random"` (DerSimonian-Laird or REML), `control`
+for the baseline-risk rule, `ci_type = "logit"` for bounded intervals,
+`se_method` for the individual SE model, `mid_sd` to propagate MID
+uncertainty, and `dist = "lognormal"`/`"t"` for non-Normal change
+scores.
 
 ## Key functions
 

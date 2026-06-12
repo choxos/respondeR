@@ -108,8 +108,44 @@ responder_analysis(sample_responder_data, mid = 1)[,
 #> 4     median 0.4869694 0.2150781 0.2718912        NA        NA
 ```
 
-The control proportion is always computed with the **same** pooling as
-the experimental arm.
+### Baseline risk: matched or median control
+
+By default (`control = "matched"`) the control responder proportion is
+pooled the same way as the experimental arm, so each summary method
+contrasts like with like.
+
+The simulation study that motivated this package (Sofi-Mahmudi, 2024)
+instead held the baseline risk fixed at the **median control arm** for
+every summary method, varying only how the experimental arm was pooled.
+That choice is available via `control = "median"`. It treats the control
+event rate as a single nuisance baseline, much as a GRADE
+summary-of-findings table takes one representative control risk, and
+reports the experimental pooling against it. Because the median control
+arm carries no sampling-variance model, this option returns point
+estimates only.
+
+``` r
+
+matched <- responder_analysis(sample_responder_data, mid = 1)
+medbase <- responder_analysis(sample_responder_data, mid = 1, control = "median")
+keep <- matched$method %in% c("median", "unweighted", "weighted")
+data.frame(
+  method     = matched$method[keep],
+  pc_matched = round(matched$p_c[keep], 3),
+  pc_median  = round(medbase$p_c[keep], 3),
+  rd_matched = round(matched$rd[keep], 3),
+  rd_median  = round(medbase$rd[keep], 3)
+)
+#>       method pc_matched pc_median rd_matched rd_median
+#> 1   weighted      0.221     0.215      0.254     0.259
+#> 2 unweighted      0.228     0.215      0.249     0.262
+#> 3     median      0.215     0.215      0.272     0.272
+```
+
+Under `control = "median"` every summary method shares one control
+proportion (the median control arm); the `median` method is unchanged,
+and the `individual` and `smd` methods, which pool per-study contrasts,
+ignore the option.
 
 ## Relative effect measures
 

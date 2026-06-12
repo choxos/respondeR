@@ -192,8 +192,42 @@ confidence interval.</p>
 <span><span class="co">#&gt; 2   weighted 0.4742782 0.2205372 0.2537410 0.1985865 0.3088955</span></span>
 <span><span class="co">#&gt; 3 unweighted 0.4767051 0.2279613 0.2487438        NA        NA</span></span>
 <span><span class="co">#&gt; 4     median 0.4869694 0.2150781 0.2718912        NA        NA</span></span></code></pre></div>
-<p>The control proportion is always computed with the
-<strong>same</strong> pooling as the experimental arm.</p>
+</div>
+<div class="section level3">
+<h3 id="baseline-risk-matched-or-median-control">Baseline risk: matched or median control<a class="anchor" aria-label="anchor" href="#baseline-risk-matched-or-median-control"></a>
+</h3>
+<p>By default (<code>control = "matched"</code>) the control responder
+proportion is pooled the same way as the experimental arm, so each
+summary method contrasts like with like.</p>
+<p>The simulation study that motivated this package (Sofi-Mahmudi, 2024)
+instead held the baseline risk fixed at the <strong>median control
+arm</strong> for every summary method, varying only how the experimental
+arm was pooled. That choice is available via
+<code>control = "median"</code>. It treats the control event rate as a
+single nuisance baseline, much as a GRADE summary-of-findings table
+takes one representative control risk, and reports the experimental
+pooling against it. Because the median control arm carries no
+sampling-variance model, this option returns point estimates only.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">matched</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/responder_analysis.html">responder_analysis</a></span><span class="op">(</span><span class="va">sample_responder_data</span>, mid <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">medbase</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/responder_analysis.html">responder_analysis</a></span><span class="op">(</span><span class="va">sample_responder_data</span>, mid <span class="op">=</span> <span class="fl">1</span>, control <span class="op">=</span> <span class="st">"median"</span><span class="op">)</span></span>
+<span><span class="va">keep</span> <span class="op">&lt;-</span> <span class="va">matched</span><span class="op">$</span><span class="va">method</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"median"</span>, <span class="st">"unweighted"</span>, <span class="st">"weighted"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  method     <span class="op">=</span> <span class="va">matched</span><span class="op">$</span><span class="va">method</span><span class="op">[</span><span class="va">keep</span><span class="op">]</span>,</span>
+<span>  pc_matched <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">matched</span><span class="op">$</span><span class="va">p_c</span><span class="op">[</span><span class="va">keep</span><span class="op">]</span>, <span class="fl">3</span><span class="op">)</span>,</span>
+<span>  pc_median  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">medbase</span><span class="op">$</span><span class="va">p_c</span><span class="op">[</span><span class="va">keep</span><span class="op">]</span>, <span class="fl">3</span><span class="op">)</span>,</span>
+<span>  rd_matched <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">matched</span><span class="op">$</span><span class="va">rd</span><span class="op">[</span><span class="va">keep</span><span class="op">]</span>, <span class="fl">3</span><span class="op">)</span>,</span>
+<span>  rd_median  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">medbase</span><span class="op">$</span><span class="va">rd</span><span class="op">[</span><span class="va">keep</span><span class="op">]</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt;       method pc_matched pc_median rd_matched rd_median</span></span>
+<span><span class="co">#&gt; 1   weighted      0.221     0.215      0.254     0.259</span></span>
+<span><span class="co">#&gt; 2 unweighted      0.228     0.215      0.249     0.262</span></span>
+<span><span class="co">#&gt; 3     median      0.215     0.215      0.272     0.272</span></span></code></pre></div>
+<p>Under <code>control = "median"</code> every summary method shares one
+control proportion (the median control arm); the <code>median</code>
+method is unchanged, and the <code>individual</code> and
+<code>smd</code> methods, which pool per-study contrasts, ignore the
+option.</p>
 </div>
 </div>
 <div class="section level2">
@@ -215,7 +249,7 @@ back-transformed. Following Altman (1998), when the risk-difference
 interval <em>excludes</em> zero the NNT bounds are the reciprocals of
 the RD bounds; when it <em>includes</em> zero the NNT is unbounded and
 respondeR returns <code>NA</code> bounds to flag it.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/responder_analysis.html">responder_analysis</a></span><span class="op">(</span><span class="va">sample_responder_data</span>, mid <span class="op">=</span> <span class="fl">1</span>, method <span class="op">=</span> <span class="st">"individual"</span><span class="op">)</span><span class="op">[</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rd"</span>, <span class="st">"rr"</span>, <span class="st">"rr_lb"</span>, <span class="st">"rr_ub"</span>, <span class="st">"or"</span>, <span class="st">"nnt"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;          rd       rr    rr_lb    rr_ub       or      nnt</span></span>
@@ -236,7 +270,7 @@ control. Under a Normal model it is exact:</p>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>δ</mi><mi>i</mi></msub><annotation encoding="application/x-tex">\delta_i</annotation></semantics></math>
 are pooled by inverse variance (with a delta-method variance) and
 back-transformed. No threshold is required.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cles</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/responder_cles.html">responder_cles</a></span><span class="op">(</span><span class="va">sample_responder_data</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>cles <span class="op">=</span> <span class="va">cles</span><span class="op">$</span><span class="va">cles</span>, lb <span class="op">=</span> <span class="va">cles</span><span class="op">$</span><span class="va">cles_lb</span>, ub <span class="op">=</span> <span class="va">cles</span><span class="op">$</span><span class="va">cles_ub</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      cles        lb        ub </span></span>
@@ -255,7 +289,7 @@ and combines the result with the weighted-pooled control responder rate
 to recover risks. It is a useful cross-check on the cut-point methods
 because it bridges to risks through a different distributional
 assumption.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/responder_analysis.html">responder_analysis</a></span><span class="op">(</span><span class="va">sample_responder_data</span>, mid <span class="op">=</span> <span class="fl">1</span>, method <span class="op">=</span> <span class="st">"smd"</span><span class="op">)</span><span class="op">[</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"method"</span>, <span class="st">"p_e"</span>, <span class="st">"p_c"</span>, <span class="st">"rd"</span>, <span class="st">"or"</span>, <span class="st">"or_lb"</span>, <span class="st">"or_ub"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;   method       p_e       p_c        rd       or    or_lb    or_ub</span></span>
@@ -273,7 +307,7 @@ Cochran’s
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>I</mi><mn>2</mn></msup><annotation encoding="application/x-tex">I^2</annotation></semantics></math>,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>τ</mi><mn>2</mn></msup><annotation encoding="application/x-tex">\tau^2</annotation></semantics></math>
 and a prediction interval.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/responder_analysis.html">responder_analysis</a></span><span class="op">(</span><span class="va">sample_responder_data</span>, mid <span class="op">=</span> <span class="fl">1</span>, method <span class="op">=</span> <span class="st">"individual"</span>,</span>
 <span>                   pooling <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tau2"</span>, <span class="st">"i2"</span>, <span class="st">"q"</span>, <span class="st">"q_p"</span>,</span>
 <span>                                           <span class="st">"pi_lb"</span>, <span class="st">"pi_ub"</span><span class="op">)</span><span class="op">]</span></span>
@@ -297,7 +331,7 @@ interval whose width adapts to the observed dispersion of the study
 estimates and which is better calibrated for few-study meta-analyses
 (Rover, Knapp &amp; Friede, 2015). The example below has only three
 studies, exactly where this matters.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span></span>
 <span>  wald <span class="op">=</span> <span class="fu"><a href="../reference/responder_analysis.html">responder_analysis</a></span><span class="op">(</span><span class="va">sample_responder_data</span>, mid <span class="op">=</span> <span class="fl">1</span>, method <span class="op">=</span> <span class="st">"individual"</span>,</span>
 <span>                            pooling <span class="op">=</span> <span class="st">"random"</span>, ci_method <span class="op">=</span> <span class="st">"wald"</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rd"</span>, <span class="st">"rd_lb"</span>, <span class="st">"rd_ub"</span><span class="op">)</span><span class="op">]</span>,</span>
@@ -340,7 +374,7 @@ clamps the probabilities that feed ratios, logs and variances away from
 0 and 1 by a tiny amount, so a sensitivity sweep over the MID returns
 finite (if wide) results instead of failing.</li>
 </ul>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/responder_analysis.html">responder_analysis</a></span><span class="op">(</span><span class="va">sample_responder_data</span>, mid <span class="op">=</span> <span class="fl">1</span>, method <span class="op">=</span> <span class="st">"weighted"</span>,</span>
 <span>                   ci_type <span class="op">=</span> <span class="st">"logit"</span>, mid_sd <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"rd"</span>, <span class="st">"rd_lb"</span>, <span class="st">"rd_ub"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;         rd     rd_lb     rd_ub</span></span>

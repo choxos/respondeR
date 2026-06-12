@@ -260,9 +260,9 @@
 </tr>
 </tbody>
 </table>
-<p>The control proportion always uses the <strong>same</strong> pooling as the experimental arm.</p>
+<p>For the summary methods the control proportion uses the <strong>same</strong> pooling as the experimental arm by default (<code>control = "matched"</code>). Set <code>control = "median"</code> to take the baseline risk from the median control arm for every summary method, as in the simulation study of Sofi-Mahmudi (2024); the experimental arm is still pooled by the chosen method, and the result is then a point estimate (the median control arm carries no variance model).</p>
 <p><strong>Effect measures.</strong> Every method that yields proportions reports the absolute <strong>risk difference</strong>, the relative <strong>risk ratio</strong> and <strong>odds ratio</strong>, and the <strong>number needed to treat</strong>. <code><a href="reference/responder_cles.html">responder_cles()</a></code> adds the threshold-free <strong>common-language effect size</strong> (probabilistic index).</p>
-<p><strong>Options.</strong> <code>pooling = "random"</code> (DerSimonian-Laird or REML), <code>ci_type = "logit"</code> for bounded intervals, <code>se_method</code> for the individual SE model, <code>mid_sd</code> to propagate MID uncertainty, and <code>dist = "lognormal"</code>/<code>"t"</code> for non-Normal change scores.</p>
+<p><strong>Options.</strong> <code>pooling = "random"</code> (DerSimonian-Laird or REML), <code>control</code> for the baseline-risk rule, <code>ci_type = "logit"</code> for bounded intervals, <code>se_method</code> for the individual SE model, <code>mid_sd</code> to propagate MID uncertainty, and <code>dist = "lognormal"</code>/<code>"t"</code> for non-Normal change scores.</p>
 </div>
 <div class="section level2">
 <h2 id="key-functions">Key functions<a class="anchor" aria-label="anchor" href="#key-functions"></a>

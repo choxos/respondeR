@@ -184,17 +184,35 @@ so it reports a pooled <code>rd</code> but leaves
 <span><span class="co">#&gt; 1 individual -0.2554475 -0.3239244 -0.1869705</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="baseline-risk-matched-or-median-control">Baseline risk: matched or median control<a class="anchor" aria-label="anchor" href="#baseline-risk-matched-or-median-control"></a>
+</h2>
+<p>By default each summary method pools the control arm the same way as
+the experimental arm. To instead hold the baseline risk at the median
+control arm for every summary method, as in the simulation study behind
+this package (Sofi-Mahmudi, 2024), set <code>control = "median"</code>.
+This returns point estimates, because the median control arm has no
+variance model:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/responder_analysis.html">responder_analysis</a></span><span class="op">(</span><span class="va">sample_responder_data</span>, mid <span class="op">=</span> <span class="fl">1</span>, control <span class="op">=</span> <span class="st">"median"</span><span class="op">)</span><span class="op">[</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"method"</span>, <span class="st">"p_e"</span>, <span class="st">"p_c"</span>, <span class="st">"rd"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="co">#&gt;       method       p_e       p_c        rd</span></span>
+<span><span class="co">#&gt; 1 individual        NA        NA 0.2554475</span></span>
+<span><span class="co">#&gt; 2   weighted 0.4742782 0.2150781 0.2592001</span></span>
+<span><span class="co">#&gt; 3 unweighted 0.4767051 0.2150781 0.2616270</span></span>
+<span><span class="co">#&gt; 4     median 0.4869694 0.2150781 0.2718912</span></span></code></pre></div>
+</div>
+<div class="section level2">
 <h2 id="per-study-results-and-a-forest-plot">Per-study results and a forest plot<a class="anchor" aria-label="anchor" href="#per-study-results-and-a-forest-plot"></a>
 </h2>
 <p><code><a href="../reference/responder_rd_individual.html">responder_rd_individual()</a></code> returns the per-study risk
 differences that feed a forest plot:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/responder_rd_individual.html">responder_rd_individual</a></span><span class="op">(</span><span class="va">sample_responder_data</span>, mid <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     study       p_e       p_c        rd         se      ci_lb     ci_ub</span></span>
 <span><span class="co">#&gt; 1 Study 1 0.4867232 0.2564577 0.2302655 0.10023645 0.03380566 0.4267253</span></span>
 <span><span class="co">#&gt; 2 Study 2 0.4355507 0.2259278 0.2096229 0.05454152 0.10272350 0.3165223</span></span>
 <span><span class="co">#&gt; 3 Study 3 0.5068639 0.2047187 0.3021452 0.05106129 0.20206690 0.4022235</span></span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/responder_rd_individual.html">responder_rd_individual</a></span><span class="op">(</span><span class="va">sample_responder_data</span>, mid <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">pooled</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/responder_analysis.html">responder_analysis</a></span><span class="op">(</span><span class="va">sample_responder_data</span>, mid <span class="op">=</span> <span class="fl">1</span>, method <span class="op">=</span> <span class="st">"individual"</span><span class="op">)</span></span>
 <span></span>
@@ -211,8 +229,8 @@ differences that feed a forest plot:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/segments.html" class="external-link">segments</a></span><span class="op">(</span><span class="va">lo</span>, <span class="va">y</span>, <span class="va">hi</span>, <span class="va">y</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">est</span>, <span class="va">y</span>, pch <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">ps</span><span class="op">)</span><span class="op">)</span>, <span class="fl">18</span><span class="op">)</span>, cex <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1.4</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">ps</span><span class="op">)</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis</a></span><span class="op">(</span><span class="fl">2</span>, at <span class="op">=</span> <span class="va">y</span>, labels <span class="op">=</span> <span class="va">labels</span>, las <span class="op">=</span> <span class="fl">1</span>, tick <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p><img src="respondeR_files/figure-html/unnamed-chunk-7-1.png" class="r-plt" alt="Forest plot of per-study responder risk differences" width="576"></p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<p><img src="respondeR_files/figure-html/unnamed-chunk-8-1.png" class="r-plt" alt="Forest plot of per-study responder risk differences" width="576"></p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">op</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -220,7 +238,7 @@ differences that feed a forest plot:</p>
 </h2>
 <p>When studies disagree, use random-effects pooling. respondeR reports
 Cochran’s Q, I-squared, tau-squared and a prediction interval:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/responder_analysis.html">responder_analysis</a></span><span class="op">(</span><span class="va">sample_responder_data</span>, mid <span class="op">=</span> <span class="fl">1</span>, method <span class="op">=</span> <span class="st">"individual"</span>,</span>
 <span>                   pooling <span class="op">=</span> <span class="st">"random"</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"method"</span>, <span class="st">"rd"</span>, <span class="st">"rd_lb"</span>, <span class="st">"rd_ub"</span>,</span>
 <span>                                           <span class="st">"tau2"</span>, <span class="st">"i2"</span>, <span class="st">"pi_lb"</span>, <span class="st">"pi_ub"</span><span class="op">)</span><span class="op">]</span></span>
@@ -233,7 +251,7 @@ Cochran’s Q, I-squared, tau-squared and a prediction interval:</p>
 <p>Choosing a MID is sometimes contentious. The common-language effect
 size sidesteps it entirely: the probability that a randomly chosen
 treated patient responds better than a randomly chosen control.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cles</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/responder_cles.html">responder_cles</a></span><span class="op">(</span><span class="va">sample_responder_data</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"CLES = %.1f%% (%.1f%% to %.1f%%)"</span>,</span>
 <span>        <span class="fl">100</span> <span class="op">*</span> <span class="va">cles</span><span class="op">$</span><span class="va">cles</span>, <span class="fl">100</span> <span class="op">*</span> <span class="va">cles</span><span class="op">$</span><span class="va">cles_lb</span>, <span class="fl">100</span> <span class="op">*</span> <span class="va">cles</span><span class="op">$</span><span class="va">cles_ub</span><span class="op">)</span></span>
@@ -250,7 +268,7 @@ more negative value is a larger pain reduction; we analyze with
 <code>direction = "lower"</code> and a negative MID equal to the
 responder threshold. Using a 1.5 cm reduction as the minimal important
 difference:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/responder_analysis.html">responder_analysis</a></span><span class="op">(</span><span class="va">vas_pain</span>, mid <span class="op">=</span> <span class="op">-</span><span class="fl">1.5</span>, direction <span class="op">=</span> <span class="st">"lower"</span>,</span>
 <span>                          pooling <span class="op">=</span> <span class="st">"random"</span>, ci_method <span class="op">=</span> <span class="st">"hksj"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/format_responder_results.html">format_responder_results</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span></span>
@@ -264,11 +282,15 @@ difference:</p>
 <span><span class="co">#&gt; 2 3.11 (2.63 to 3.68)</span></span>
 <span><span class="co">#&gt; 3                4.14</span></span>
 <span><span class="co">#&gt; 4                8.81</span></span></code></pre></div>
-<p>So, pooling the per-study estimates, roughly 17 to 21 more exercise
-patients per 100 reach a 1.5 cm pain reduction than controls, depending
-on the method. The threshold-free common-language effect size avoids
-picking a cut-point:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<p>Pooling the per-study estimates (the <code>individual</code> method,
+the most defensible), about 17 more exercise patients per 100 reach a
+1.5 cm pain reduction than controls. The pool-then-dichotomize summaries
+give larger and more dispersed values here (weighted about 21,
+unweighted about 32, median about 47 per 100): that spread is a sign of
+heterogeneity across the 20 trials, and the individual method, which
+respects each trial’s own scale, is the one to trust. The threshold-free
+common-language effect size avoids picking a cut-point:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cles</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/responder_cles.html">responder_cles</a></span><span class="op">(</span><span class="va">vas_pain</span>, direction <span class="op">=</span> <span class="st">"lower"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"A treated patient has less pain than a control %.0f%% of the time (%.0f%% to %.0f%%)"</span>,</span>
 <span>        <span class="fl">100</span> <span class="op">*</span> <span class="va">cles</span><span class="op">$</span><span class="va">cles</span>, <span class="fl">100</span> <span class="op">*</span> <span class="va">cles</span><span class="op">$</span><span class="va">cles_lb</span>, <span class="fl">100</span> <span class="op">*</span> <span class="va">cles</span><span class="op">$</span><span class="va">cles_ub</span><span class="op">)</span></span>
@@ -280,7 +302,7 @@ Figure 3, reproduced under CC BY 4.0.)</p>
 <h2 id="the-shiny-application">The Shiny application<a class="anchor" aria-label="anchor" href="#the-shiny-application"></a>
 </h2>
 <p>Everything above is available in a point-and-click app:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/launch_responder_analysis.html">launch_responder_analysis</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>The same tool runs in the browser, with no installation, at <a href="https://choxos.github.io/respondeR/app/" class="uri">https://choxos.github.io/respondeR/app/</a>.</p>
 </div>

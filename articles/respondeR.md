@@ -101,6 +101,26 @@ responder_analysis(sample_responder_data, mid = 1, direction = "lower",
 #> 1 individual -0.2554475 -0.3239244 -0.1869705
 ```
 
+## Baseline risk: matched or median control
+
+By default each summary method pools the control arm the same way as the
+experimental arm. To instead hold the baseline risk at the median
+control arm for every summary method, as in the simulation study behind
+this package (Sofi-Mahmudi, 2024), set `control = "median"`. This
+returns point estimates, because the median control arm has no variance
+model:
+
+``` r
+
+responder_analysis(sample_responder_data, mid = 1, control = "median")[,
+  c("method", "p_e", "p_c", "rd")]
+#>       method       p_e       p_c        rd
+#> 1 individual        NA        NA 0.2554475
+#> 2   weighted 0.4742782 0.2150781 0.2592001
+#> 3 unweighted 0.4767051 0.2150781 0.2616270
+#> 4     median 0.4869694 0.2150781 0.2718912
+```
+
 ## Per-study results and a forest plot
 
 [`responder_rd_individual()`](https://choxos.github.io/respondeR/reference/responder_rd_individual.md)
@@ -136,7 +156,7 @@ axis(2, at = y, labels = labels, las = 1, tick = FALSE)
 ```
 
 ![Forest plot of per-study responder risk
-differences](respondeR_files/figure-html/unnamed-chunk-7-1.png)
+differences](respondeR_files/figure-html/unnamed-chunk-8-1.png)
 
 ``` r
 
@@ -198,10 +218,14 @@ format_responder_results(res)
 #> 4                8.81
 ```
 
-So, pooling the per-study estimates, roughly 17 to 21 more exercise
-patients per 100 reach a 1.5 cm pain reduction than controls, depending
-on the method. The threshold-free common-language effect size avoids
-picking a cut-point:
+Pooling the per-study estimates (the `individual` method, the most
+defensible), about 17 more exercise patients per 100 reach a 1.5 cm pain
+reduction than controls. The pool-then-dichotomize summaries give larger
+and more dispersed values here (weighted about 21, unweighted about 32,
+median about 47 per 100): that spread is a sign of heterogeneity across
+the 20 trials, and the individual method, which respects each trial’s
+own scale, is the one to trust. The threshold-free common-language
+effect size avoids picking a cut-point:
 
 ``` r
 

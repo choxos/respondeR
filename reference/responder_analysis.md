@@ -20,6 +20,7 @@ responder_analysis(
   method = c("individual", "weighted", "unweighted", "median", "smd"),
   se_method = c("binomial", "delta"),
   pooling = c("fixed", "random"),
+  control = c("matched", "median"),
   tau_method = c("DL", "REML"),
   dist = c("normal", "lognormal", "t"),
   df = NULL,
@@ -66,6 +67,15 @@ responder_analysis(
 
   `"fixed"` (default) or `"random"` effects, for the `"individual"` and
   `"smd"` methods.
+
+- control:
+
+  Baseline-risk rule for the summary methods (`median`, `unweighted`,
+  `weighted`): `"matched"` (default) pools the control arm the same way
+  as the experimental arm; `"median"` always takes the control responder
+  proportion from the median control arm (the Sofi-Mahmudi 2024
+  baseline), which yields point estimates only. Ignored by
+  `"individual"` and `"smd"`.
 
 - tau_method:
 
@@ -138,8 +148,15 @@ and CLES are on the proportion scale; multiply by 100 for percentages.
   with the weighted-pooled control responder rate to recover risks. The
   second approach of the reference; not included by default.
 
-The control proportion always uses the same pooling as the experimental
-arm.
+For the summary methods (`median`, `unweighted`, `weighted`) the control
+proportion is, by default, pooled the same way as the experimental arm
+(`control = "matched"`). Set `control = "median"` to instead take the
+baseline risk from the median control arm for every summary method, as
+in the Sofi-Mahmudi (2024) simulation study; the experimental arm is
+still pooled by the chosen method. Because the median control arm
+carries no sampling-variance model, `control = "median"` reports point
+estimates only (no intervals) for the summary methods. The `individual`
+and `smd` methods pool per-study contrasts and ignore `control`.
 
 ## References
 
