@@ -25,6 +25,10 @@ evaluated in a simulation study (Sofi-Mahmudi, 2024).
 
 ``` r
 
+# From CRAN (when available)
+install.packages("respondeR")
+
+# Development version from GitHub
 # install.packages("remotes")
 remotes::install_github("choxos/respondeR")
 ```
