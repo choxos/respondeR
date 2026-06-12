@@ -90,6 +90,11 @@ pick_pool <- function(pool, pooling, conf_level) {
 #'   proportion scale; multiply by 100 for percentages.
 #'
 #' @references
+#' Thorlund K, Walter SD, Johnston BC, Furukawa TA, Guyatt GH (2011). Pooling
+#' health-related quality of life outcomes in meta-analysis -- a tutorial and
+#' review of methods for enhancing interpretability. \emph{Research Synthesis
+#' Methods}, 2(3), 188-203. \doi{10.1002/jrsm.46}
+#'
 #' Anzures-Cabrera J, Sarpatwari A, Higgins JPT (2011). Expressing findings from
 #' meta-analyses of continuous outcomes in terms of risks. \emph{Statistics in
 #' Medicine}, 30(25), 2867-2880. \doi{10.1002/sim.4298}
@@ -178,7 +183,8 @@ responder_analysis <- function(data, mid,
     )
     het <- p_rd
     if (pooling == "fixed") {
-      het <- modifyList(p_rd, list(pi_lb = NA_real_, pi_ub = NA_real_))
+      het$pi_lb <- NA_real_
+      het$pi_ub <- NA_real_
     }
     make_row("individual", pooling, k, NA_real_, NA_real_, meas, het, s_rd$var)
   }
@@ -218,7 +224,8 @@ responder_analysis <- function(data, mid,
     )
     het <- p_g
     if (pooling == "fixed") {
-      het <- modifyList(p_g, list(pi_lb = NA_real_, pi_ub = NA_real_))
+      het$pi_lb <- NA_real_
+      het$pi_ub <- NA_real_
     }
     make_row("smd", pooling, k, pe, pc, meas, het, var_rd = NA_real_)
   }

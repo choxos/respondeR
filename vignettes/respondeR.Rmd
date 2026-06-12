@@ -1,0 +1,149 @@
+---
+title: "Getting started with respondeR"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with respondeR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+```{r setup}
+library(respondeR)
+```
+
+## The idea
+
+Trials of continuous outcomes usually report a **mean change** and **standard
+deviation** in each arm. Those are hard to communicate: a standardised mean
+difference of 0.3 means little to a patient. A **responder analysis** translates
+the continuous result into something concrete — the proportion of patients who
+improve by at least a **minimal important difference (MID)** — and contrasts the
+arms on familiar scales: risk difference, risk ratio, odds ratio, number needed
+to treat.
+
+respondeR does this from summary statistics alone, using the cut-point approach
+of Anzures-Cabrera, Sarpatwari & Higgins (2011). It never needs individual
+patient data.
+
+## Data format
+
+One row per study. The experimental arm columns end in `_e`, the control arm in
+`_c`:
+
+```{r}
+sample_responder_data
+```
+
+| Column | Meaning |
+|--------|---------|
+| `study` | Study label |
+| `change_e`, `change_c` | Mean change per arm |
+| `sd_e`, `sd_c` | SD of change per arm |
+| `n_e`, `n_c` | Sample size per arm |
+
+## A first analysis
+
+Suppose a change above `1` is clinically meaningful. With the default settings,
+`responder_analysis()` returns one row per pooling method:
+
+```{r}
+res <- responder_analysis(sample_responder_data, mid = 1)
+res[, c("method", "p_e", "p_c", "rd", "rd_lb", "rd_ub", "rr", "or", "nnt")]
+```
+
+* `p_e`, `p_c` are the experimental and control responder proportions (on the
+  `[0, 1]` scale).
+* `rd`, `rr`, `or`, `nnt` are the between-arm contrasts, each with a confidence
+  interval (`*_lb`, `*_ub`).
+* The `individual` method pools per-study risk differences, so it reports a
+  pooled `rd` but leaves `p_e`/`p_c` as `NA`.
+
+For a quick, readable summary use `format_responder_results()`:
+
+```{r}
+format_responder_results(res)
+```
+
+## Which way is "better"?
+
+By default a *higher* change is a response. For outcomes where *lower* is better
+(pain, symptom scores), set `direction = "lower"`:
+
+```{r}
+responder_analysis(sample_responder_data, mid = 1, direction = "lower",
+                   method = "individual")[, c("method", "rd", "rd_lb", "rd_ub")]
+```
+
+## Per-study results and a forest plot
+
+`responder_rd_individual()` returns the per-study risk differences that feed a
+forest plot:
+
+```{r}
+responder_rd_individual(sample_responder_data, mid = 1)
+```
+
+```{r, fig.width = 6, fig.height = 3.2, fig.alt = "Forest plot of per-study responder risk differences"}
+ps <- responder_rd_individual(sample_responder_data, mid = 1)
+pooled <- responder_analysis(sample_responder_data, mid = 1, method = "individual")
+
+y <- rev(seq_len(nrow(ps) + 1))
+est <- c(ps$rd, pooled$rd) * 100
+lo  <- c(ps$ci_lb, pooled$rd_lb) * 100
+hi  <- c(ps$ci_ub, pooled$rd_ub) * 100
+labels <- c(as.character(ps$study), "Pooled")
+
+op <- par(mar = c(4, 6, 1, 1))
+plot(NA, xlim = range(c(lo, hi, 0)), ylim = c(0.5, length(y) + 0.5),
+     yaxt = "n", xlab = "Risk difference (%)", ylab = "", bty = "n")
+abline(v = 0, lty = 2, col = "grey60")
+segments(lo, y, hi, y, lwd = 2)
+points(est, y, pch = c(rep(15, nrow(ps)), 18), cex = c(rep(1.4, nrow(ps)), 2))
+axis(2, at = y, labels = labels, las = 1, tick = FALSE)
+par(op)
+```
+
+## Random effects and heterogeneity
+
+When studies disagree, use random-effects pooling. respondeR reports Cochran's
+Q, I-squared, tau-squared and a prediction interval:
+
+```{r}
+responder_analysis(sample_responder_data, mid = 1, method = "individual",
+                   pooling = "random")[, c("method", "rd", "rd_lb", "rd_ub",
+                                           "tau2", "i2", "pi_lb", "pi_ub")]
+```
+
+## A threshold-free alternative
+
+Choosing a MID is sometimes contentious. The common-language effect size sidesteps
+it entirely: the probability that a randomly chosen treated patient responds
+better than a randomly chosen control.
+
+```{r}
+cles <- responder_cles(sample_responder_data)
+sprintf("CLES = %.1f%% (%.1f%% to %.1f%%)",
+        100 * cles$cles, 100 * cles$cles_lb, 100 * cles$cles_ub)
+```
+
+## The Shiny application
+
+Everything above is available in a point-and-click app:
+
+```{r, eval = FALSE}
+launch_responder_analysis()
+```
+
+The same tool runs in the browser, with no installation, at
+<https://choxos.github.io/respondeR/app>.
+
+## Where next
+
+See `vignette("methodology")` for the full statistical detail: each method's
+estimator and variance, the relative measures, the SMD bridge, the
+logit/MID-uncertainty/distribution options, assumptions and a method-choice
+guide.

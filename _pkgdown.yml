@@ -1,0 +1,43 @@
+url: https://choxos.github.io/respondeR/
+
+template:
+  bootstrap: 5
+
+navbar:
+  structure:
+    left: [intro, reference, articles, news]
+    right: [search, github]
+  components:
+    articles:
+      text: Articles
+      menu:
+      - text: Getting started
+        href: articles/respondeR.html
+      - text: Methodology
+        href: articles/methodology.html
+
+reference:
+- title: Responder analysis
+  desc: Pooled responder proportions and between-arm effect measures.
+  contents:
+  - responder_analysis
+  - responder_rd_individual
+  - responder_proportions
+- title: Threshold-free
+  desc: Effect size that needs no MID.
+  contents:
+  - responder_cles
+- title: Display and app
+  contents:
+  - format_responder_results
+  - launch_responder_analysis
+- title: Data
+  contents:
+  - sample_responder_data
+
+articles:
+- title: Articles
+  navbar: ~
+  contents:
+  - respondeR
+  - methodology
