@@ -27,7 +27,7 @@ mu_b <- 1.5    # experimental mean (shifted right)
 sds <- 1
 cut <- 1.95    # MID cut-point C
 
-x <- seq(-3.6, 5.4, length.out = 500)
+x <- seq(-2.9, 4.7, length.out = 500)
 dens_a <- dnorm(x, mu_a, sds)
 dens_b <- dnorm(x, mu_b, sds)
 df <- data.frame(x, dens_a, dens_b)
@@ -48,33 +48,34 @@ p <- ggplot(df, aes(x)) +
     x = cut, xend = cut, y = 0, yend = dnorm(cut, mu_b, sds),
     linetype = "dashed", colour = "#1A1A2E", linewidth = 0.5
   ) +
-  coord_cartesian(ylim = c(0, 0.46), expand = FALSE) +
+  coord_cartesian(ylim = c(0, 0.52), expand = FALSE) +
   theme_void() +
   theme(legend.position = "none")
 
 args <- list(
   subplot = p,
   package = "respondeR",
-  p_size = 15,
-  p_y = 1.44,
+  p_size = 19,
+  p_y = 1.5,
   p_color = "#1A1A2E",
   p_family = family,
   p_fontface = "bold",
   s_x = 1.0,
-  s_y = 0.88,
-  s_width = 1.56,
-  s_height = 1.2,
+  s_y = 0.92,
+  s_width = 1.2,
+  s_height = 1.04,
   h_fill = "#F7F8FC",
   h_color = "#2D4BD8",
   h_size = 1.6,
   url = "choxos.github.io/respondeR",
-  u_size = 4.2,
+  u_size = 5.5,
   u_color = "#1A1A2E",
   u_family = family,
-  dpi = 320
+  dpi = 500
 )
 
+# PNG only: hexSticker + showtext does not size fonts correctly on the SVG
+# device, and the PNG is what the README, pkgdown site and GitHub use.
 do.call(sticker, c(args, filename = "man/figures/logo.png"))
-do.call(sticker, c(args, filename = "man/figures/logo.svg"))
 
-cat("respondeR logo written to man/figures/logo.{png,svg}\n")
+cat("respondeR logo written to man/figures/logo.png\n")
