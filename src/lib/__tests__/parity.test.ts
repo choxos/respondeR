@@ -8,7 +8,7 @@ import {
 } from "../engine";
 import { sampleData } from "../sample";
 
-// Normalise: R's NA and any non-finite value compare as null.
+// Normalize: R's NA and any non-finite value compare as null.
 const norm = (x: unknown): number | null =>
   x == null || (typeof x === "number" && !Number.isFinite(x)) ? null : (x as number);
 

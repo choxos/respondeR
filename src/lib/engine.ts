@@ -443,6 +443,86 @@ export interface ClesResult {
   pooling: Pooling; k: number;
 }
 
+export interface PerStudyCalc {
+  study: string;
+  p_e: number;
+  p_c: number;
+  rd: number;
+  se: number;
+  weight: number;
+}
+
+export interface CalcTrace {
+  se_method: SeMethod;
+  pooling: Pooling;
+  ci_type: CiType;
+  conf_level: number;
+  perStudy: PerStudyCalc[];
+  sumWeight: number;
+  fixed: { rd: number; se: number; lb: number; ub: number };
+  random: {
+    rd: number; se: number; lb: number; ub: number;
+    tau2: number; i2: number | null; q: number | null; q_p: number | null;
+    pi_lb: number | null; pi_ub: number | null;
+  };
+  weighted: {
+    mu_e: number; sigma_e: number; var_mu_e: number; p_e: number; var_pe: number;
+    mu_c: number; sigma_c: number; var_mu_c: number; p_c: number; var_pc: number;
+    rd: number; se: number;
+  };
+}
+
+/**
+ * Expose the intermediate quantities behind the individual and weighted
+ * methods, so the app can show the calculation step by step (and so the effect
+ * of the se_method, pooling and interval toggles is visible).
+ */
+export function traceCalculations(data: StudyRow[], o: AnalysisOptions): CalcTrace {
+  const direction = opt(o.direction, "higher");
+  const seMethod = opt(o.se_method, "binomial");
+  const pooling = opt(o.pooling, "fixed");
+  const dist = opt(o.dist, "normal");
+  const df = opt(o.df, null);
+  const midSd = opt(o.mid_sd, 0);
+  const ciType = opt(o.ci_type, "wald");
+  const conf = opt(o.conf_level, 0.95);
+  const z = qnorm((1 + conf) / 2);
+
+  const ps = perStudyStats(data, o.mid, direction, seMethod, dist, df, midSd);
+  const perStudy: PerStudyCalc[] = ps.map((s) => ({
+    study: s.study, p_e: s.p_e, p_c: s.p_c, rd: s.rd,
+    se: Math.sqrt(s.var_rd), weight: 1 / s.var_rd,
+  }));
+  const sumWeight = sum(perStudy.map((s) => s.weight));
+  const pool = dlPool(ps.map((s) => s.rd), ps.map((s) => s.var_rd), conf);
+
+  const seF = Math.sqrt(pool.fixedVar);
+  const seR = Math.sqrt(pool.var);
+
+  const ae = armSummary(data.map((d) => d.change_e), data.map((d) => d.sd_e), data.map((d) => d.n_e), "weighted");
+  const ac = armSummary(data.map((d) => d.change_c), data.map((d) => d.sd_c), data.map((d) => d.n_c), "weighted");
+  const ie = probInfo(ae.mu, ae.sigma, 2, o.mid, direction, dist, df);
+  const ic = probInfo(ac.mu, ac.sigma, 2, o.mid, direction, dist, df);
+  const varPe = ie.dpDmu ** 2 * ae.varMu;
+  const varPc = ic.dpDmu ** 2 * ac.varMu;
+
+  return {
+    se_method: seMethod, pooling, ci_type: ciType, conf_level: conf,
+    perStudy, sumWeight,
+    fixed: { rd: pool.fixed, se: seF, lb: pool.fixed - z * seF, ub: pool.fixed + z * seF },
+    random: {
+      rd: pool.est, se: seR, lb: pool.ciLb, ub: pool.ciUb,
+      tau2: pool.tau2, i2: pool.i2, q: pool.q, q_p: pool.qP,
+      pi_lb: pool.piLb, pi_ub: pool.piUb,
+    },
+    weighted: {
+      mu_e: ae.mu, sigma_e: ae.sigma, var_mu_e: ae.varMu, p_e: ie.p, var_pe: varPe,
+      mu_c: ac.mu, sigma_c: ac.sigma, var_mu_c: ac.varMu, p_c: ic.p, var_pc: varPc,
+      rd: ie.p - ic.p, se: Math.sqrt(varPe + varPc),
+    },
+  };
+}
+
 export function responderCles(
   data: StudyRow[],
   o: { direction?: Direction; pooling?: Pooling; conf_level?: number } = {},
