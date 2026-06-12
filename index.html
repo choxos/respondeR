@@ -11,8 +11,8 @@
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Responder Analysis for Continuous Outcomes">
-<meta name="description" content="Express meta-analyses of continuous trial outcomes in terms of responder risks, following the interpretability tutorial of Thorlund, Walter, Johnston, Furukawa and Guyatt (2011) &lt;doi:10.1002/jrsm.46&gt;. Given the mean change, standard deviation and sample size per arm across studies, respondeR estimates the proportion of patients who cross a minimal important difference (MID) threshold under a parametric model for the change scores, and contrasts the arms as a risk difference, risk ratio, odds ratio or number needed to treat. It provides median, unweighted-mean, weighted-mean and per-study (fixed- or random-effects) pooling, the standardised-mean-difference to odds-ratio bridge of Anzures-Cabrera, Sarpatwari and Higgins (2011) &lt;doi:10.1002/sim.4298&gt;, a threshold-free common-language effect size, and a point-and-click Shiny application.">
-<meta property="og:description" content="Express meta-analyses of continuous trial outcomes in terms of responder risks, following the interpretability tutorial of Thorlund, Walter, Johnston, Furukawa and Guyatt (2011) &lt;doi:10.1002/jrsm.46&gt;. Given the mean change, standard deviation and sample size per arm across studies, respondeR estimates the proportion of patients who cross a minimal important difference (MID) threshold under a parametric model for the change scores, and contrasts the arms as a risk difference, risk ratio, odds ratio or number needed to treat. It provides median, unweighted-mean, weighted-mean and per-study (fixed- or random-effects) pooling, the standardised-mean-difference to odds-ratio bridge of Anzures-Cabrera, Sarpatwari and Higgins (2011) &lt;doi:10.1002/sim.4298&gt;, a threshold-free common-language effect size, and a point-and-click Shiny application.">
+<meta name="description" content="Express meta-analyses of continuous trial outcomes in terms of responder risks, following the interpretability tutorial of Thorlund, Walter, Johnston, Furukawa and Guyatt (2011) &lt;doi:10.1002/jrsm.46&gt;. Given the mean change, standard deviation and sample size per arm across studies, respondeR estimates the proportion of patients who cross a minimal important difference (MID) threshold under a parametric model for the change scores, and contrasts the arms as a risk difference, risk ratio, odds ratio or number needed to treat. It provides median, unweighted-mean, weighted-mean and per-study (fixed- or random-effects) pooling, the standardized-mean-difference to odds-ratio bridge of Anzures-Cabrera, Sarpatwari and Higgins (2011) &lt;doi:10.1002/sim.4298&gt;, a threshold-free common-language effect size, and a point-and-click Shiny application. The estimation methods were evaluated in a simulation study by Sofi-Mahmudi (2024) &lt;https://hdl.handle.net/11375/30210&gt;.">
+<meta property="og:description" content="Express meta-analyses of continuous trial outcomes in terms of responder risks, following the interpretability tutorial of Thorlund, Walter, Johnston, Furukawa and Guyatt (2011) &lt;doi:10.1002/jrsm.46&gt;. Given the mean change, standard deviation and sample size per arm across studies, respondeR estimates the proportion of patients who cross a minimal important difference (MID) threshold under a parametric model for the change scores, and contrasts the arms as a risk difference, risk ratio, odds ratio or number needed to treat. It provides median, unweighted-mean, weighted-mean and per-study (fixed- or random-effects) pooling, the standardized-mean-difference to odds-ratio bridge of Anzures-Cabrera, Sarpatwari and Higgins (2011) &lt;doi:10.1002/sim.4298&gt;, a threshold-free common-language effect size, and a point-and-click Shiny application. The estimation methods were evaluated in a simulation study by Sofi-Mahmudi (2024) &lt;https://hdl.handle.net/11375/30210&gt;.">
 <meta property="og:image" content="https://choxos.github.io/respondeR/logo.svg">
 </head>
 <body>
@@ -62,8 +62,8 @@
 </div>
 <!-- badges: start -->
 
-<p><strong>respondeR</strong> re-expresses meta-analyses of <em>continuous</em> trial outcomes in terms of <strong>responders</strong>. Clinicians and patients reason about “how many people get better”, not about standardised mean differences. Given only the summary statistics that trials usually report — the <strong>mean change</strong>, <strong>standard deviation</strong> and <strong>sample size</strong> in each arm — respondeR estimates the proportion of patients whose change crosses a <strong>minimal important difference (MID)</strong> threshold, and contrasts the arms as a <strong>risk difference (RD)</strong>, <strong>risk ratio (RR)</strong>, <strong>odds ratio (OR)</strong> or <strong>number needed to treat (NNT)</strong>.</p>
-<p>It follows the interpretability tutorial of Thorlund, Walter, Johnston, Furukawa &amp; Guyatt (2011), implementing the cut-point (“dichotomisation”) and standardised-mean-difference conversions it reviews, and adds a threshold-free common-language effect size.</p>
+<p><strong>respondeR</strong> re-expresses meta-analyses of <em>continuous</em> trial outcomes in terms of <strong>responders</strong>. Clinicians and patients reason about “how many people get better”, not about standardized mean differences. It uses only the summary statistics that trials usually report: the <strong>mean change</strong>, <strong>standard deviation</strong> and <strong>sample size</strong> in each arm. From these respondeR estimates the proportion of patients whose change crosses a <strong>minimal important difference (MID)</strong> threshold, and contrasts the arms as a <strong>risk difference (RD)</strong>, <strong>risk ratio (RR)</strong>, <strong>odds ratio (OR)</strong> or <strong>number needed to treat (NNT)</strong>.</p>
+<p>It follows the interpretability tutorial of Thorlund, Walter, Johnston, Furukawa &amp; Guyatt (2011), implementing the cut-point (“dichotomization”) and standardized-mean-difference conversions it reviews, and adds a threshold-free common-language effect size. The estimation methods were evaluated in a simulation study (Sofi-Mahmudi, 2024).</p>
 <p><strong>Try it in the browser (no install):</strong> <a href="https://choxos.github.io/respondeR/app" class="uri">https://choxos.github.io/respondeR/app</a></p>
 <p><strong>Documentation:</strong> <a href="https://choxos.github.io/respondeR/" class="uri">https://choxos.github.io/respondeR/</a></p>
 <div class="section level2">
@@ -204,7 +204,7 @@
 <div class="section level2">
 <h2 id="methods">Methods<a class="anchor" aria-label="anchor" href="#methods"></a>
 </h2>
-<p>A responder is a patient whose change crosses the MID. Under a Normal model an arm’s responder probability is <code>p = Phi((mu - mid) / sigma)</code> (for <code>direction = "higher"</code>). The methods differ in how the per-arm summaries are pooled across studies before — or after — dichotomising.</p>
+<p>A responder is a patient whose change crosses the MID. Under a Normal model an arm’s responder probability is <code>p = Phi((mu - mid) / sigma)</code> (for <code>direction = "higher"</code>). The methods differ in how the per-arm summaries are pooled across studies before, or after, dichotomizing.</p>
 <table class="table">
 <colgroup>
 <col width="17%">
@@ -229,7 +229,7 @@
 <td><code>weighted</code></td>
 <td>IV-pooled mean + within-study pooled SD</td>
 <td>Delta method</td>
-<td>Paper-aligned pool-then-dichotomise</td>
+<td>Paper-aligned pool-then-dichotomize</td>
 </tr>
 <tr>
 <td><code>unweighted</code></td>
@@ -245,7 +245,7 @@
 </tr>
 <tr>
 <td><code>smd</code></td>
-<td>Standardised mean difference to odds ratio</td>
+<td>Standardized mean difference to odds ratio</td>
 <td>Delta method</td>
 <td>Cox logistic bridge; opt-in</td>
 </tr>
@@ -298,7 +298,7 @@
 <div class="section level2">
 <h2 id="the-shiny-application">The Shiny application<a class="anchor" aria-label="anchor" href="#the-shiny-application"></a>
 </h2>
-<p>The package bundles a point-and-click app — upload data (CSV or Excel) or use the example, set the MID and direction, choose methods and options, and view the results table, per-study forest plot and CLES, with CSV downloads.</p>
+<p>The package bundles a point-and-click app: upload data (CSV or Excel) or use the example, set the MID and direction, choose methods and options, and view the results table, per-study forest plot and CLES, with CSV downloads.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/launch_responder_analysis.html">launch_responder_analysis</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>The same tool runs entirely in your browser (no R, no install) at <a href="https://choxos.github.io/respondeR/app" class="uri">https://choxos.github.io/respondeR/app</a>.</p>
@@ -308,25 +308,28 @@
 </h2>
 <ul>
 <li>
-<code><a href="articles/respondeR.html">vignette("respondeR")</a></code> — getting started: data format, a worked example, and interpreting the output.</li>
+<code><a href="articles/respondeR.html">vignette("respondeR")</a></code>: getting started; data format, a worked example, and interpreting the output.</li>
 <li>
-<code><a href="articles/methodology.html">vignette("methodology")</a></code> — the statistics in full: the cut-point approach, each method and its variance, the relative measures, CLES, the SMD bridge, heterogeneity, assumptions and a method-choice guide.</li>
+<code><a href="articles/methodology.html">vignette("methodology")</a></code>: the statistics in full; the cut-point approach, each method and its variance, the relative measures, CLES, the SMD bridge, heterogeneity, assumptions and a method-choice guide.</li>
 </ul>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <blockquote>
-<p>Thorlund, K., Walter, S. D., Johnston, B. C., Furukawa, T. A., &amp; Guyatt, G. H. (2011). Pooling health-related quality of life outcomes in meta-analysis — a tutorial and review of methods for enhancing interpretability. <em>Research Synthesis Methods</em>, 2(3), 188–203. <a href="https://doi.org/10.1002/jrsm.46" class="external-link">doi:10.1002/jrsm.46</a></p>
+<p>Sofi-Mahmudi, A. (2024). Identifying an optimal strategy for converting pain as a continuous outcome to a responder analysis [Master’s thesis, McMaster University]. MacSphere. <a href="http://hdl.handle.net/11375/30210" class="external-link uri">http://hdl.handle.net/11375/30210</a></p>
 </blockquote>
 <blockquote>
-<p>Anzures-Cabrera, J., Sarpatwari, A., &amp; Higgins, J. P. T. (2011). Expressing findings from meta-analyses of continuous outcomes in terms of risks. <em>Statistics in Medicine</em>, 30(25), 2867–2880. <a href="https://doi.org/10.1002/sim.4298" class="external-link">doi:10.1002/sim.4298</a></p>
+<p>Thorlund, K., Walter, S. D., Johnston, B. C., Furukawa, T. A., &amp; Guyatt, G. H. (2011). Pooling health-related quality of life outcomes in meta-analysis: a tutorial and review of methods for enhancing interpretability. <em>Research Synthesis Methods</em>, 2(3), 188 to 203. <a href="https://doi.org/10.1002/jrsm.46" class="external-link">doi:10.1002/jrsm.46</a></p>
 </blockquote>
 <blockquote>
-<p>McGraw, K. O., &amp; Wong, S. P. (1992). A common language effect size statistic. <em>Psychological Bulletin</em>, 111(2), 361–365.</p>
+<p>Anzures-Cabrera, J., Sarpatwari, A., &amp; Higgins, J. P. T. (2011). Expressing findings from meta-analyses of continuous outcomes in terms of risks. <em>Statistics in Medicine</em>, 30(25), 2867 to 2880. <a href="https://doi.org/10.1002/sim.4298" class="external-link">doi:10.1002/sim.4298</a></p>
 </blockquote>
 <blockquote>
-<p>Chinn, S. (2000). A simple method for converting an odds ratio to effect size for use in meta-analysis. <em>Statistics in Medicine</em>, 19(22), 3127–3131.</p>
+<p>McGraw, K. O., &amp; Wong, S. P. (1992). A common language effect size statistic. <em>Psychological Bulletin</em>, 111(2), 361 to 365.</p>
+</blockquote>
+<blockquote>
+<p>Chinn, S. (2000). A simple method for converting an odds ratio to effect size for use in meta-analysis. <em>Statistics in Medicine</em>, 19(22), 3127 to 3131.</p>
 </blockquote>
 </div>
 <div class="section level2">
@@ -338,7 +341,7 @@
 <div class="section level2">
 <h2 id="the-logo">The logo<a class="anchor" aria-label="anchor" href="#the-logo"></a>
 </h2>
-<p>The hex logo shows two Normal change-score distributions — control and experimental — split by a dashed MID cut-point. The shaded tails beyond the cut are the responder proportions in each arm; their contrast is the risk difference. That is responder analysis in one picture.</p>
+<p>The hex logo shows two Normal change-score distributions, control and experimental, split by a dashed MID cut-point. The shaded tails beyond the cut are the responder proportions in each arm; their contrast is the risk difference. That is responder analysis in one picture.</p>
 </div>
 <div class="section level2">
 <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a>

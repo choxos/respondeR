@@ -9,12 +9,11 @@ library(respondeR)
 
 Trials of continuous outcomes usually report a **mean change** and
 **standard deviation** in each arm. Those are hard to communicate: a
-standardised mean difference of 0.3 means little to a patient. A
+standardized mean difference of 0.3 means little to a patient. A
 **responder analysis** translates the continuous result into something
-concrete — the proportion of patients who improve by at least a
-**minimal important difference (MID)** — and contrasts the arms on
-familiar scales: risk difference, risk ratio, odds ratio, number needed
-to treat.
+concrete: the proportion of patients who improve by at least a **minimal
+important difference (MID)**. It contrasts the arms on familiar scales:
+risk difference, risk ratio, odds ratio, number needed to treat.
 
 respondeR does this from summary statistics alone, using the cut-point
 approach of Anzures-Cabrera, Sarpatwari & Higgins (2011). It never needs

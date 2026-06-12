@@ -1,5 +1,5 @@
 # Generate the respondeR hex logo.
-# Concept: responder analysis dichotomises two continuous distributions
+# Concept: responder analysis dichotomizes two continuous distributions
 # (control A and experimental B) at a cut-point C; the shaded tails beyond C are
 # the responder proportions pA and pB, whose contrast is the risk difference.
 #
@@ -12,7 +12,7 @@ library(systemfonts)
 # ── Register Poppins as a *native* font (downloaded once if absent) ──
 # We register with systemfonts rather than using showtext, because both the
 # ragg PNG device and the svglite SVG device read systemfonts and draw real
-# (vector) text. showtext would rasterise text on the SVG device and mis-size
+# (vector) text. showtext would rasterize text on the SVG device and mis-size
 # it. This keeps the PNG and SVG identical and both rendered in Poppins.
 text_family <- "sans"
 try(
@@ -60,12 +60,12 @@ p <- ggplot(df, aes(x)) +
   geom_area(data = tail, aes(y = dens_b), fill = col_b, alpha = 0.45) +
   geom_area(data = tail, aes(y = dens_a), fill = col_a, alpha = 0.60) +
   # Density curves.
-  geom_line(aes(y = dens_a), colour = col_a, linewidth = 0.9) +
-  geom_line(aes(y = dens_b), colour = col_b, linewidth = 0.9) +
+  geom_line(aes(y = dens_a), color = col_a, linewidth = 0.9) +
+  geom_line(aes(y = dens_b), color = col_b, linewidth = 0.9) +
   # The cut-point C.
   geom_segment(
     x = cut, xend = cut, y = 0, yend = dnorm(cut, mu_b, sds),
-    linetype = "dashed", colour = "#1A1A2E", linewidth = 0.5
+    linetype = "dashed", color = "#1A1A2E", linewidth = 0.5
   ) +
   coord_cartesian(ylim = c(0, 0.52), expand = FALSE) +
   theme_void() +

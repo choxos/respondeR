@@ -1,6 +1,6 @@
 # Per-study responder risk differences
 
-Dichotomises each study at the MID threshold and returns the per-study
+Dichotomizes each study at the MID threshold and returns the per-study
 responder risk difference (experimental minus control) with a confidence
 interval. Building block for the `"individual"` method of
 [`responder_analysis()`](https://choxos.github.io/respondeR/reference/responder_analysis.md);

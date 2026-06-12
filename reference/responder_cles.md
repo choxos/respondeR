@@ -60,7 +60,7 @@ A list with:
 
 - delta, se_delta:
 
-  Pooled standardised difference and its SE.
+  Pooled standardized difference and its SE.
 
 - tau2, i2, q, q_p, pi_lb, pi_ub:
 
@@ -74,7 +74,7 @@ A list with:
 ## References
 
 McGraw KO, Wong SP (1992). A common language effect size statistic.
-*Psychological Bulletin*, 111(2), 361-365.
+*Psychological Bulletin*, 111(2), 361 to 365.
 
 ## Examples
 

@@ -9,27 +9,27 @@ end.
 
 ### Features
 
-- [`responder_analysis()`](https://choxos.github.io/respondeR/reference/responder_analysis.md)
-  – the main entry point. Converts continuous arm summaries (mean
-  change, SD, n) into responder proportions and a tidy table of
-  between-arm effect measures: risk difference, risk ratio, odds ratio
-  and number needed to treat. Pooling methods: `"individual"`,
-  `"weighted"`, `"unweighted"`, `"median"` and `"smd"`.
+- [`responder_analysis()`](https://choxos.github.io/respondeR/reference/responder_analysis.md):
+  the main entry point. Converts continuous arm summaries (mean change,
+  SD, n) into responder proportions and a tidy table of between-arm
+  effect measures: risk difference, risk ratio, odds ratio and number
+  needed to treat. Pooling methods: `"individual"`, `"weighted"`,
+  `"unweighted"`, `"median"` and `"smd"`.
 - [`responder_rd_individual()`](https://choxos.github.io/respondeR/reference/responder_rd_individual.md)
   and
-  [`responder_proportions()`](https://choxos.github.io/respondeR/reference/responder_proportions.md)
-  – exported building blocks for per-study risk differences and arm
+  [`responder_proportions()`](https://choxos.github.io/respondeR/reference/responder_proportions.md):
+  exported building blocks for per-study risk differences and arm
   responder probabilities.
-- [`responder_cles()`](https://choxos.github.io/respondeR/reference/responder_cles.md)
-  – threshold-free common-language effect size (the probabilistic
-  index), pooled fixed or random effects, requiring no MID.
-- [`format_responder_results()`](https://choxos.github.io/respondeR/reference/format_responder_results.md)
-  – display-ready formatting for reports and the app.
-- [`launch_responder_analysis()`](https://choxos.github.io/respondeR/reference/launch_responder_analysis.md)
-  – launches the bundled **ResponderAnalysis** Shiny application
+- [`responder_cles()`](https://choxos.github.io/respondeR/reference/responder_cles.md):
+  threshold-free common-language effect size (the probabilistic index),
+  pooled fixed or random effects, requiring no MID.
+- [`format_responder_results()`](https://choxos.github.io/respondeR/reference/format_responder_results.md):
+  display-ready formatting for reports and the app.
+- [`launch_responder_analysis()`](https://choxos.github.io/respondeR/reference/launch_responder_analysis.md):
+  launches the bundled **ResponderAnalysis** Shiny application
   (direction toggle, method/pooling/interval options, RR/OR/NNT, a
   per-study forest plot, CLES and CSV/Excel I/O).
-- `sample_responder_data` – bundled example dataset.
+- `sample_responder_data`: bundled example dataset.
 
 ### Methods and options
 
@@ -41,7 +41,7 @@ end.
 - **Relative measures.** Risk ratio and odds ratio (log-scale pooling)
   and number needed to treat (Altman, 1998) accompany the absolute risk
   difference.
-- **SMD bridge.** The `"smd"` method pools the standardised mean
+- **SMD bridge.** The `"smd"` method pools the standardized mean
   difference (Hedges’ g) and maps it to an odds ratio through the
   logistic link, combined with the weighted-pooled control risk (Cox;
   Chinn, 2000).

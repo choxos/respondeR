@@ -10,23 +10,25 @@ important difference (MID) threshold under a parametric model for the
 change scores, and contrasts the arms as a risk difference, risk ratio,
 odds ratio or number needed to treat. It provides median,
 unweighted-mean, weighted-mean and per-study (fixed- or random-effects)
-pooling, the standardised-mean-difference to odds-ratio bridge of
+pooling, the standardized-mean-difference to odds-ratio bridge of
 Anzures-Cabrera, Sarpatwari and Higgins (2011)
 [doi:10.1002/sim.4298](https://doi.org/10.1002/sim.4298) , a
 threshold-free common-language effect size, and a point-and-click
-'Shiny' application.
+'Shiny' application. The estimation methods were evaluated in a
+simulation study by Sofi-Mahmudi (2024)
+<https://hdl.handle.net/11375/30210>.
 
 ## Details
 
 The package converts continuous trial outcomes (mean change, standard
 deviation and sample size per arm, across studies) into the proportion
-of "responders" – patients whose change crosses a minimal important
-difference (MID) threshold – under a Normal model for the change scores,
-and expresses the between-arm contrast as a risk difference (RD). Four
+of "responders": patients whose change crosses a minimal important
+difference (MID) threshold, under a Normal model for the change scores.
+It expresses the between-arm contrast as a risk difference (RD). Four
 pooling strategies are provided (median, unweighted mean, weighted mean
 and individual), following the interpretability methods reviewed by
-Thorlund and colleagues (2011) and the cut-point ("dichotomisation") and
-standardised-mean-difference approaches of Anzures-Cabrera, Sarpatwari
+Thorlund and colleagues (2011) and the cut-point ("dichotomization") and
+standardized-mean-difference approaches of Anzures-Cabrera, Sarpatwari
 and Higgins (2011).
 
 The statistical engine lives in exported, side-effect-free functions
@@ -40,15 +42,19 @@ bundled Shiny application
 
 ## References
 
+Sofi-Mahmudi A (2024). Identifying an optimal strategy for converting
+pain as a continuous outcome to a responder analysis. Master's thesis,
+McMaster University. <https://hdl.handle.net/11375/30210>
+
 Thorlund K, Walter SD, Johnston BC, Furukawa TA, Guyatt GH (2011).
-Pooling health-related quality of life outcomes in meta-analysis – a
+Pooling health-related quality of life outcomes in meta-analysis: a
 tutorial and review of methods for enhancing interpretability. *Research
-Synthesis Methods*, 2(3), 188-203.
+Synthesis Methods*, 2(3), 188 to 203.
 [doi:10.1002/jrsm.46](https://doi.org/10.1002/jrsm.46)
 
 Anzures-Cabrera J, Sarpatwari A, Higgins JPT (2011). Expressing findings
 from meta-analyses of continuous outcomes in terms of risks. *Statistics
-in Medicine*, 30(25), 2867-2880.
+in Medicine*, 30(25), 2867 to 2880.
 [doi:10.1002/sim.4298](https://doi.org/10.1002/sim.4298)
 
 ## See also

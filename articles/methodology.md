@@ -3,7 +3,7 @@
 This vignette sets out the statistics behind respondeR: the cut-point
 approach, each pooling method and its variance, the relative effect
 measures, the threshold-free common-language effect size, the
-standardised-mean-difference bridge, random effects, the refinement
+standardized-mean-difference bridge, random effects, the refinement
 options, and the assumptions and their limits. It closes with a guide to
 choosing a method.
 
@@ -21,10 +21,10 @@ p = \Pr(X > m) = \Phi\!\left(\frac{\mu - m}{\sigma}\right)
 ```
 
 or $`p = \Phi\!\left(\frac{m - \mu}{\sigma}\right)`$ when a *lower*
-change is better. This is the cut-point (“dichotomisation”) method
+change is better. This is the cut-point (“dichotomization”) method
 reviewed by Thorlund and colleagues (2011) and detailed by
 Anzures-Cabrera, Sarpatwari & Higgins (2011). The between-arm contrast
-is then a familiar binary effect measure — by default the **risk
+is then a familiar binary effect measure: by default the **risk
 difference** $`\mathrm{RD} = p_e - p_c`$.
 
 respondeR keeps proportions on the $`[0, 1]`$ scale internally and
@@ -39,7 +39,7 @@ $`(\bar d_{c,i}, s_{c,i}, n_{c,i})`$ for the control arm.
 
 ### Individual (the default workhorse)
 
-Dichotomise each study, form its risk difference, then pool. With
+Dichotomize each study, form its risk difference, then pool. With
 $`p_{e,i} = \Phi((\bar d_{e,i} - m)/s_{e,i})`$ and likewise $`p_{c,i}`$,
 
 ``` math
@@ -62,7 +62,7 @@ scale.
 
 ### Weighted mean
 
-Pool *before* dichotomising. The mean is combined by inverse variance
+Pool *before* dichotomizing. The mean is combined by inverse variance
 and the SD by the within-study pooled SD:
 
 ``` math
@@ -75,7 +75,7 @@ Then $`p^{\star} = \Phi((\bar d^{\star} - m)/s^{\star})`$ and the
 risk-difference variance comes from the delta method,
 $`\mathrm{Var}(p^{\star}) \approx \phi(z^{\star})^2\,
 \mathrm{Var}(\bar d^{\star}) / s^{\star 2}`$. This is the paper-aligned
-“pool-then-dichotomise” estimator.
+“pool-then-dichotomize” estimator.
 
 ### Unweighted mean and median
 
@@ -149,7 +149,7 @@ c(cles = cles$cles, lb = cles$cles_lb, ub = cles$cles_ub)
 ## The SMD bridge (`method = "smd"`)
 
 The second approach of Anzures-Cabrera et al. (2011) pools the
-standardised mean difference and maps it to an odds ratio. respondeR
+standardized mean difference and maps it to an odds ratio. respondeR
 pools Hedges’ $`g`$, applies the Cox logistic link
 $`\ln\mathrm{OR} = \frac{\pi}{\sqrt 3}\, g`$, and combines the result
 with the weighted-pooled control responder rate to recover risks. It is
@@ -195,7 +195,7 @@ for very few studies; interpret them cautiously when $`k`$ is small.
   variances, with the correct between-arm correlation through the shared
   threshold.
 - **Alternative distributions** (`dist`). The change scores can be
-  modelled as lognormal or Student-$`t`$ instead of Normal, as a
+  modeled as lognormal or Student-$`t`$ instead of Normal, as a
   sensitivity analysis for skewed or heavy-tailed data (variances are
   obtained numerically).
 
@@ -226,7 +226,7 @@ responder_analysis(sample_responder_data, mid = 1, method = "weighted",
 | If you want… | Use |
 |----|----|
 | A defensible default that respects each study’s scale | `individual` (fixed or random) |
-| The paper’s pool-then-dichotomise estimator | `weighted` |
+| The paper’s pool-then-dichotomize estimator | `weighted` |
 | A robustness or sensitivity summary | `median` / `unweighted` (point estimates) |
 | A cross-check via a different bridge to risks | `smd` |
 | To avoid choosing a threshold altogether | [`responder_cles()`](https://choxos.github.io/respondeR/reference/responder_cles.md) |
@@ -235,23 +235,27 @@ responder_analysis(sample_responder_data, mid = 1, method = "weighted",
 
 ## References
 
+Sofi-Mahmudi, A. (2024). Identifying an optimal strategy for converting
+pain as a continuous outcome to a responder analysis \[Master’s thesis,
+McMaster University\]. MacSphere. <https://hdl.handle.net/11375/30210>
+
 Thorlund, K., Walter, S. D., Johnston, B. C., Furukawa, T. A., & Guyatt,
 G. H. (2011). Pooling health-related quality of life outcomes in
-meta-analysis — a tutorial and review of methods for enhancing
-interpretability. *Research Synthesis Methods*, 2(3), 188–203.
+meta-analysis: a tutorial and review of methods for enhancing
+interpretability. *Research Synthesis Methods*, 2(3), 188 to 203.
 <doi:10.1002/jrsm.46>
 
 Altman, D. G. (1998). Confidence intervals for the number needed to
-treat. *BMJ*, 317(7168), 1309–1312.
+treat. *BMJ*, 317(7168), 1309 to 1312.
 
 Anzures-Cabrera, J., Sarpatwari, A., & Higgins, J. P. T. (2011).
 Expressing findings from meta-analyses of continuous outcomes in terms
-of risks. *Statistics in Medicine*, 30(25), 2867–2880.
+of risks. *Statistics in Medicine*, 30(25), 2867 to 2880.
 <doi:10.1002/sim.4298>
 
 Chinn, S. (2000). A simple method for converting an odds ratio to effect
-size for use in meta-analysis. *Statistics in Medicine*, 19(22),
-3127–3131.
+size for use in meta-analysis. *Statistics in Medicine*, 19(22), 3127 to
+3131.
 
 McGraw, K. O., & Wong, S. P. (1992). A common language effect size
-statistic. *Psychological Bulletin*, 111(2), 361–365.
+statistic. *Psychological Bulletin*, 111(2), 361 to 365.

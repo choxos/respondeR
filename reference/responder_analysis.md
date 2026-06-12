@@ -2,10 +2,10 @@
 
 Converts continuous outcomes (mean change, SD and sample size per arm,
 across studies) into responder proportions and a range of between-arm
-effect measures – risk difference (RD), risk ratio (RR), odds ratio (OR)
-and number needed to treat (NNT) – under a parametric model for the
+effect measures: the risk difference (RD), risk ratio (RR), odds ratio
+(OR) and number needed to treat (NNT), under a parametric model for the
 change scores. Responders are defined by a minimal important difference
-(MID) threshold (the cut-point / "dichotomisation" approach of
+(MID) threshold (the cut-point / "dichotomization" approach of
 Anzures-Cabrera, Sarpatwari and Higgins, 2011). For a threshold-free
 alternative see
 [`responder_cles()`](https://choxos.github.io/respondeR/reference/responder_cles.md).
@@ -102,24 +102,24 @@ and CLES are on the proportion scale; multiply by 100 for percentages.
 
 - `individual`:
 
-  Dichotomise each study, then pool the per-study effect measures (fixed
+  Dichotomize each study, then pool the per-study effect measures (fixed
   or random effects). The most defensible option; the per-study SE
   follows `se_method`.
 
 - `weighted`:
 
   Pool the mean change by inverse variance and the SD by the
-  within-study pooled SD, dichotomise the pooled summaries, and obtain
+  within-study pooled SD, dichotomize the pooled summaries, and obtain
   variances by the delta method.
 
 - `unweighted`, `median`:
 
-  Dichotomise the arithmetic mean / median of the study means and SDs.
+  Dichotomize the arithmetic mean / median of the study means and SDs.
   Summaries with no variance model: intervals are `NA`.
 
 - `smd`:
 
-  Pool the standardised mean difference (Hedges' g), bridge to an odds
+  Pool the standardized mean difference (Hedges' g), bridge to an odds
   ratio via the logistic link (`lnOR = (pi / sqrt(3)) g`), and combine
   with the weighted-pooled control responder rate to recover risks. The
   second approach of the reference; not included by default.
@@ -129,15 +129,19 @@ arm.
 
 ## References
 
+Sofi-Mahmudi A (2024). Identifying an optimal strategy for converting
+pain as a continuous outcome to a responder analysis. Master's thesis,
+McMaster University. <https://hdl.handle.net/11375/30210>
+
 Thorlund K, Walter SD, Johnston BC, Furukawa TA, Guyatt GH (2011).
-Pooling health-related quality of life outcomes in meta-analysis – a
+Pooling health-related quality of life outcomes in meta-analysis: a
 tutorial and review of methods for enhancing interpretability. *Research
-Synthesis Methods*, 2(3), 188-203.
+Synthesis Methods*, 2(3), 188 to 203.
 [doi:10.1002/jrsm.46](https://doi.org/10.1002/jrsm.46)
 
 Anzures-Cabrera J, Sarpatwari A, Higgins JPT (2011). Expressing findings
 from meta-analyses of continuous outcomes in terms of risks. *Statistics
-in Medicine*, 30(25), 2867-2880.
+in Medicine*, 30(25), 2867 to 2880.
 [doi:10.1002/sim.4298](https://doi.org/10.1002/sim.4298)
 
 ## See also

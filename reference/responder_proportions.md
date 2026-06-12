@@ -58,14 +58,14 @@ probability) and `var_p` (delta-method variance).
 ## References
 
 Thorlund K, Walter SD, Johnston BC, Furukawa TA, Guyatt GH (2011).
-Pooling health-related quality of life outcomes in meta-analysis – a
+Pooling health-related quality of life outcomes in meta-analysis: a
 tutorial and review of methods for enhancing interpretability. *Research
-Synthesis Methods*, 2(3), 188-203.
+Synthesis Methods*, 2(3), 188 to 203.
 [doi:10.1002/jrsm.46](https://doi.org/10.1002/jrsm.46)
 
 Anzures-Cabrera J, Sarpatwari A, Higgins JPT (2011). Expressing findings
 from meta-analyses of continuous outcomes in terms of risks. *Statistics
-in Medicine*, 30(25), 2867-2880.
+in Medicine*, 30(25), 2867 to 2880.
 [doi:10.1002/sim.4298](https://doi.org/10.1002/sim.4298)
 
 ## Examples

@@ -69,7 +69,7 @@
 <p>This vignette sets out the statistics behind respondeR: the cut-point
 approach, each pooling method and its variance, the relative effect
 measures, the threshold-free common-language effect size, the
-standardised-mean-difference bridge, random effects, the refinement
+standardized-mean-difference bridge, random effects, the refinement
 options, and the assumptions and their limits. It closes with a guide to
 choosing a method.</p>
 <div class="section level2">
@@ -92,9 +92,9 @@ p = \Pr(X &gt; m) = \Phi\!\left(\frac{\mu - m}{\sigma}\right)
 <p>or
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>=</mo><mi mathvariant="normal">Φ</mi><mspace width="-0.167em"></mspace><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mrow><mi>m</mi><mo>−</mo><mi>μ</mi></mrow><mi>σ</mi></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">p = \Phi\!\left(\frac{m - \mu}{\sigma}\right)</annotation></semantics></math>
 when a <em>lower</em> change is better. This is the cut-point
-(“dichotomisation”) method reviewed by Thorlund and colleagues (2011)
+(“dichotomization”) method reviewed by Thorlund and colleagues (2011)
 and detailed by Anzures-Cabrera, Sarpatwari &amp; Higgins (2011). The
-between-arm contrast is then a familiar binary effect measure — by
+between-arm contrast is then a familiar binary effect measure: by
 default the <strong>risk difference</strong>
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">R</mi><mi mathvariant="normal">D</mi></mrow><mo>=</mo><msub><mi>p</mi><mi>e</mi></msub><mo>−</mo><msub><mi>p</mi><mi>c</mi></msub></mrow><annotation encoding="application/x-tex">\mathrm{RD} = p_e - p_c</annotation></semantics></math>.</p>
 <p>respondeR keeps proportions on the
@@ -115,7 +115,7 @@ for the control arm.</p>
 <div class="section level3">
 <h3 id="individual-the-default-workhorse">Individual (the default workhorse)<a class="anchor" aria-label="anchor" href="#individual-the-default-workhorse"></a>
 </h3>
-<p>Dichotomise each study, form its risk difference, then pool. With
+<p>Dichotomize each study, form its risk difference, then pool. With
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mrow><mi>e</mi><mo>,</mo><mi>i</mi></mrow></msub><mo>=</mo><mi mathvariant="normal">Φ</mi><mo stretchy="false" form="prefix">(</mo><mo stretchy="false" form="prefix">(</mo><msub><mover><mi>d</mi><mo accent="true">‾</mo></mover><mrow><mi>e</mi><mo>,</mo><mi>i</mi></mrow></msub><mo>−</mo><mi>m</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><msub><mi>s</mi><mrow><mi>e</mi><mo>,</mo><mi>i</mi></mrow></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">p_{e,i} = \Phi((\bar d_{e,i} - m)/s_{e,i})</annotation></semantics></math>
 and likewise
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mrow><mi>c</mi><mo>,</mo><mi>i</mi></mrow></msub><annotation encoding="application/x-tex">p_{c,i}</annotation></semantics></math>,</p>
@@ -143,7 +143,7 @@ own scale.</p>
 <div class="section level3">
 <h3 id="weighted-mean">Weighted mean<a class="anchor" aria-label="anchor" href="#weighted-mean"></a>
 </h3>
-<p>Pool <em>before</em> dichotomising. The mean is combined by inverse
+<p>Pool <em>before</em> dichotomizing. The mean is combined by inverse
 variance and the SD by the within-study pooled SD:</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mover><mi>d</mi><mo accent="true">‾</mo></mover><mo>⋆</mo></msup><mo>=</mo><mfrac><mrow><munder><mo>∑</mo><mi>i</mi></munder><msub><mover><mi>d</mi><mo accent="true">‾</mo></mover><mi>i</mi></msub><mi>/</mi><msub><mi>v</mi><mi>i</mi></msub></mrow><mrow><munder><mo>∑</mo><mi>i</mi></munder><mn>1</mn><mi>/</mi><msub><mi>v</mi><mi>i</mi></msub></mrow></mfrac><mo>,</mo><mspace width="0.278em"></mspace><msub><mi>v</mi><mi>i</mi></msub><mo>=</mo><mfrac><msubsup><mi>s</mi><mi>i</mi><mn>2</mn></msubsup><msub><mi>n</mi><mi>i</mi></msub></mfrac><mo>;</mo><mspace width="2.0em"></mspace><msup><mi>s</mi><mo>⋆</mo></msup><mo>=</mo><msqrt><mfrac><mrow><munder><mo>∑</mo><mi>i</mi></munder><mo stretchy="false" form="prefix">(</mo><msub><mi>n</mi><mi>i</mi></msub><mo>−</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo><mspace width="0.167em"></mspace><msubsup><mi>s</mi><mi>i</mi><mn>2</mn></msubsup></mrow><mrow><munder><mo>∑</mo><mi>i</mi></munder><mo stretchy="false" form="prefix">(</mo><msub><mi>n</mi><mi>i</mi></msub><mo>−</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo></mrow></mfrac></msqrt><mi>.</mi></mrow><annotation encoding="application/x-tex">
 \bar d^{\star} = \frac{\sum_i \bar d_i / v_i}{\sum_i 1/v_i},\;
@@ -155,7 +155,7 @@ s^{\star} = \sqrt{\frac{\sum_i (n_i - 1)\, s_i^2}{\sum_i (n_i - 1)}}.
 and the risk-difference variance comes from the delta method,
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">V</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">r</mi></mrow><mo stretchy="false" form="prefix">(</mo><msup><mi>p</mi><mo>⋆</mo></msup><mo stretchy="false" form="postfix">)</mo><mo>≈</mo><mi>ϕ</mi><mo stretchy="false" form="prefix">(</mo><msup><mi>z</mi><mo>⋆</mo></msup><msup><mo stretchy="false" form="postfix">)</mo><mn>2</mn></msup><mspace width="0.167em"></mspace><mrow><mi mathvariant="normal">V</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">r</mi></mrow><mo stretchy="false" form="prefix">(</mo><msup><mover><mi>d</mi><mo accent="true">‾</mo></mover><mo>⋆</mo></msup><mo stretchy="false" form="postfix">)</mo><mi>/</mi><msup><mi>s</mi><mrow><mi>⋆</mi><mn>2</mn></mrow></msup></mrow><annotation encoding="application/x-tex">\mathrm{Var}(p^{\star}) \approx \phi(z^{\star})^2\,
 \mathrm{Var}(\bar d^{\star}) / s^{\star 2}</annotation></semantics></math>.
-This is the paper-aligned “pool-then-dichotomise” estimator.</p>
+This is the paper-aligned “pool-then-dichotomize” estimator.</p>
 </div>
 <div class="section level3">
 <h3 id="unweighted-mean-and-median">Unweighted mean and median<a class="anchor" aria-label="anchor" href="#unweighted-mean-and-median"></a>
@@ -227,7 +227,7 @@ back-transformed. No threshold is required.</p>
 <h2 id="the-smd-bridge-method-smd">The SMD bridge (<code>method = "smd"</code>)<a class="anchor" aria-label="anchor" href="#the-smd-bridge-method-smd"></a>
 </h2>
 <p>The second approach of Anzures-Cabrera et al. (2011) pools the
-standardised mean difference and maps it to an odds ratio. respondeR
+standardized mean difference and maps it to an odds ratio. respondeR
 pools Hedges’
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>g</mi><annotation encoding="application/x-tex">g</annotation></semantics></math>,
 applies the Cox logistic link
@@ -286,7 +286,7 @@ uncertainty into the effect-measure variances, with the correct
 between-arm correlation through the shared threshold.</li>
 <li>
 <strong>Alternative distributions</strong> (<code>dist</code>). The
-change scores can be modelled as lognormal or
+change scores can be modeled as lognormal or
 Student-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
 instead of Normal, as a sensitivity analysis for skewed or heavy-tailed
 data (variances are obtained numerically).</li>
@@ -339,7 +339,7 @@ prefer <code>ci_type = "logit"</code> there.</li>
 <code>individual</code> (fixed or random)</td>
 </tr>
 <tr class="even">
-<td>The paper’s pool-then-dichotomise estimator</td>
+<td>The paper’s pool-then-dichotomize estimator</td>
 <td><code>weighted</code></td>
 </tr>
 <tr class="odd">
@@ -370,20 +370,24 @@ impact</td>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
+<p>Sofi-Mahmudi, A. (2024). Identifying an optimal strategy for
+converting pain as a continuous outcome to a responder analysis
+[Master’s thesis, McMaster University]. MacSphere. <a href="https://hdl.handle.net/11375/30210" class="external-link uri">https://hdl.handle.net/11375/30210</a></p>
 <p>Thorlund, K., Walter, S. D., Johnston, B. C., Furukawa, T. A., &amp;
 Guyatt, G. H. (2011). Pooling health-related quality of life outcomes in
-meta-analysis — a tutorial and review of methods for enhancing
-interpretability. <em>Research Synthesis Methods</em>, 2(3), 188–203. <a href="doi:10.1002/jrsm.46" class="uri">doi:10.1002/jrsm.46</a></p>
+meta-analysis: a tutorial and review of methods for enhancing
+interpretability. <em>Research Synthesis Methods</em>, 2(3), 188 to 203.
+<a href="doi:10.1002/jrsm.46" class="uri">doi:10.1002/jrsm.46</a></p>
 <p>Altman, D. G. (1998). Confidence intervals for the number needed to
-treat. <em>BMJ</em>, 317(7168), 1309–1312.</p>
+treat. <em>BMJ</em>, 317(7168), 1309 to 1312.</p>
 <p>Anzures-Cabrera, J., Sarpatwari, A., &amp; Higgins, J. P. T. (2011).
 Expressing findings from meta-analyses of continuous outcomes in terms
-of risks. <em>Statistics in Medicine</em>, 30(25), 2867–2880. <a href="doi:10.1002/sim.4298" class="uri">doi:10.1002/sim.4298</a></p>
+of risks. <em>Statistics in Medicine</em>, 30(25), 2867 to 2880. <a href="doi:10.1002/sim.4298" class="uri">doi:10.1002/sim.4298</a></p>
 <p>Chinn, S. (2000). A simple method for converting an odds ratio to
 effect size for use in meta-analysis. <em>Statistics in Medicine</em>,
-19(22), 3127–3131.</p>
+19(22), 3127 to 3131.</p>
 <p>McGraw, K. O., &amp; Wong, S. P. (1992). A common language effect
-size statistic. <em>Psychological Bulletin</em>, 111(2), 361–365.</p>
+size statistic. <em>Psychological Bulletin</em>, 111(2), 361 to 365.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

@@ -2,18 +2,19 @@
 
 **respondeR** re-expresses meta-analyses of *continuous* trial outcomes
 in terms of **responders**. Clinicians and patients reason about “how
-many people get better”, not about standardised mean differences. Given
-only the summary statistics that trials usually report — the **mean
-change**, **standard deviation** and **sample size** in each arm —
-respondeR estimates the proportion of patients whose change crosses a
-**minimal important difference (MID)** threshold, and contrasts the arms
-as a **risk difference (RD)**, **risk ratio (RR)**, **odds ratio (OR)**
-or **number needed to treat (NNT)**.
+many people get better”, not about standardized mean differences. It
+uses only the summary statistics that trials usually report: the **mean
+change**, **standard deviation** and **sample size** in each arm. From
+these respondeR estimates the proportion of patients whose change
+crosses a **minimal important difference (MID)** threshold, and
+contrasts the arms as a **risk difference (RD)**, **risk ratio (RR)**,
+**odds ratio (OR)** or **number needed to treat (NNT)**.
 
 It follows the interpretability tutorial of Thorlund, Walter, Johnston,
-Furukawa & Guyatt (2011), implementing the cut-point (“dichotomisation”)
-and standardised-mean-difference conversions it reviews, and adds a
-threshold-free common-language effect size.
+Furukawa & Guyatt (2011), implementing the cut-point (“dichotomization”)
+and standardized-mean-difference conversions it reviews, and adds a
+threshold-free common-language effect size. The estimation methods were
+evaluated in a simulation study (Sofi-Mahmudi, 2024).
 
 **Try it in the browser (no install):**
 <https://choxos.github.io/respondeR/app>
@@ -89,15 +90,15 @@ control arm `_c`):
 A responder is a patient whose change crosses the MID. Under a Normal
 model an arm’s responder probability is `p = Phi((mu - mid) / sigma)`
 (for `direction = "higher"`). The methods differ in how the per-arm
-summaries are pooled across studies before — or after — dichotomising.
+summaries are pooled across studies before, or after, dichotomizing.
 
 | Method | What it pools | Variance / CI | Notes |
 |----|----|----|----|
 | `individual` | Per-study risk differences (fixed/random) | Yes | Most defensible; the default workhorse |
-| `weighted` | IV-pooled mean + within-study pooled SD | Delta method | Paper-aligned pool-then-dichotomise |
+| `weighted` | IV-pooled mean + within-study pooled SD | Delta method | Paper-aligned pool-then-dichotomize |
 | `unweighted` | Arithmetic mean of study means/SDs | None | Sensitivity summary (point estimate) |
 | `median` | Median of study means/SDs | None | Robustness summary (point estimate) |
-| `smd` | Standardised mean difference to odds ratio | Delta method | Cox logistic bridge; opt-in |
+| `smd` | Standardized mean difference to odds ratio | Delta method | Cox logistic bridge; opt-in |
 
 The control proportion always uses the **same** pooling as the
 experimental arm.
@@ -127,10 +128,10 @@ individual SE model, `mid_sd` to propagate MID uncertainty, and
 
 ## The Shiny application
 
-The package bundles a point-and-click app — upload data (CSV or Excel)
-or use the example, set the MID and direction, choose methods and
-options, and view the results table, per-study forest plot and CLES,
-with CSV downloads.
+The package bundles a point-and-click app: upload data (CSV or Excel) or
+use the example, set the MID and direction, choose methods and options,
+and view the results table, per-study forest plot and CLES, with CSV
+downloads.
 
 ``` r
 
@@ -142,33 +143,38 @@ The same tool runs entirely in your browser (no R, no install) at
 
 ## Vignettes
 
-- [`vignette("respondeR")`](https://choxos.github.io/respondeR/articles/respondeR.md)
-  — getting started: data format, a worked example, and interpreting the
+- [`vignette("respondeR")`](https://choxos.github.io/respondeR/articles/respondeR.md):
+  getting started; data format, a worked example, and interpreting the
   output.
-- [`vignette("methodology")`](https://choxos.github.io/respondeR/articles/methodology.md)
-  — the statistics in full: the cut-point approach, each method and its
+- [`vignette("methodology")`](https://choxos.github.io/respondeR/articles/methodology.md):
+  the statistics in full; the cut-point approach, each method and its
   variance, the relative measures, CLES, the SMD bridge, heterogeneity,
   assumptions and a method-choice guide.
 
 ## References
 
+> Sofi-Mahmudi, A. (2024). Identifying an optimal strategy for
+> converting pain as a continuous outcome to a responder analysis
+> \[Master’s thesis, McMaster University\]. MacSphere.
+> <http://hdl.handle.net/11375/30210>
+
 > Thorlund, K., Walter, S. D., Johnston, B. C., Furukawa, T. A., &
 > Guyatt, G. H. (2011). Pooling health-related quality of life outcomes
-> in meta-analysis — a tutorial and review of methods for enhancing
-> interpretability. *Research Synthesis Methods*, 2(3), 188–203.
+> in meta-analysis: a tutorial and review of methods for enhancing
+> interpretability. *Research Synthesis Methods*, 2(3), 188 to 203.
 > [doi:10.1002/jrsm.46](https://doi.org/10.1002/jrsm.46)
 
 > Anzures-Cabrera, J., Sarpatwari, A., & Higgins, J. P. T. (2011).
 > Expressing findings from meta-analyses of continuous outcomes in terms
-> of risks. *Statistics in Medicine*, 30(25), 2867–2880.
+> of risks. *Statistics in Medicine*, 30(25), 2867 to 2880.
 > [doi:10.1002/sim.4298](https://doi.org/10.1002/sim.4298)
 
 > McGraw, K. O., & Wong, S. P. (1992). A common language effect size
-> statistic. *Psychological Bulletin*, 111(2), 361–365.
+> statistic. *Psychological Bulletin*, 111(2), 361 to 365.
 
 > Chinn, S. (2000). A simple method for converting an odds ratio to
 > effect size for use in meta-analysis. *Statistics in Medicine*,
-> 19(22), 3127–3131.
+> 19(22), 3127 to 3131.
 
 ## Citing respondeR
 
@@ -179,8 +185,8 @@ citation("respondeR")
 
 ## The logo
 
-The hex logo shows two Normal change-score distributions — control and
-experimental — split by a dashed MID cut-point. The shaded tails beyond
+The hex logo shows two Normal change-score distributions, control and
+experimental, split by a dashed MID cut-point. The shaded tails beyond
 the cut are the responder proportions in each arm; their contrast is the
 risk difference. That is responder analysis in one picture.
 
