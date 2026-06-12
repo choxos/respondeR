@@ -7,18 +7,37 @@
 
 library(hexSticker)
 library(ggplot2)
-library(showtext)
+library(systemfonts)
 
-# Modern font (fall back to the default if Google Fonts is unreachable).
-family <- "sans"
-ok <- tryCatch(
+# ── Register Poppins as a *native* font (downloaded once if absent) ──
+# We register with systemfonts rather than using showtext, because both the
+# ragg PNG device and the svglite SVG device read systemfonts and draw real
+# (vector) text. showtext would rasterise text on the SVG device and mis-size
+# it. This keeps the PNG and SVG identical and both rendered in Poppins.
+text_family <- "sans"
+try(
   {
-    font_add_google("Poppins", "poppins")
-    showtext_auto()
-    family <- "poppins"
-    TRUE
+    cache <- file.path(tempdir(), "respondeR-fonts")
+    dir.create(cache, showWarnings = FALSE, recursive = TRUE)
+    fetch <- function(file) {
+      dest <- file.path(cache, file)
+      if (!file.exists(dest)) {
+        utils::download.file(
+          paste0("https://github.com/google/fonts/raw/main/ofl/poppins/", file),
+          dest,
+          mode = "wb", quiet = TRUE
+        )
+      }
+      dest
+    }
+    register_font(
+      "Poppins",
+      plain = fetch("Poppins-Regular.ttf"),
+      bold = fetch("Poppins-Bold.ttf")
+    )
+    text_family <- "Poppins"
   },
-  error = function(e) FALSE
+  silent = TRUE
 )
 
 # ── Two overlapping Normal densities with a responder cut-point ──
@@ -52,30 +71,37 @@ p <- ggplot(df, aes(x)) +
   theme_void() +
   theme(legend.position = "none")
 
-args <- list(
+hex <- sticker(
   subplot = p,
   package = "respondeR",
-  p_size = 19,
+  p_size = 5.2,
   p_y = 1.5,
   p_color = "#1A1A2E",
-  p_family = family,
+  p_family = text_family,
   p_fontface = "bold",
   s_x = 1.0,
-  s_y = 0.92,
+  s_y = 0.98,
   s_width = 1.2,
   s_height = 1.04,
   h_fill = "#F7F8FC",
   h_color = "#2D4BD8",
   h_size = 1.6,
   url = "choxos.github.io/respondeR",
-  u_size = 5.5,
+  u_size = 1.4,
   u_color = "#1A1A2E",
-  u_family = family,
-  dpi = 500
+  u_family = text_family,
+  filename = file.path(tempdir(), "respondeR-logo-preview.png")
 )
 
-# PNG only: hexSticker + showtext does not size fonts correctly on the SVG
-# device, and the PNG is what the README, pkgdown site and GitHub use.
-do.call(sticker, c(args, filename = "man/figures/logo.png"))
+# Save both formats through systemfonts-aware devices so Poppins renders
+# natively (and the SVG stays scalable).
+ggsave("man/figures/logo.png", hex,
+  width = 43.9, height = 50.8, units = "mm", dpi = 500,
+  bg = "transparent", device = ragg::agg_png
+)
+ggsave("man/figures/logo.svg", hex,
+  width = 43.9, height = 50.8, units = "mm",
+  bg = "transparent", device = svglite::svglite
+)
 
-cat("respondeR logo written to man/figures/logo.png\n")
+cat(sprintf("respondeR logo written (font: %s)\n", text_family))
