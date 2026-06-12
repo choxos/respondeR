@@ -2,3 +2,11 @@
 .Rhistory
 .RData
 .Ruserdata
+
+# macOS
+.DS_Store
+**/.DS_Store
+Rplots.pdf
+.gstack/
+node_modules
+dist

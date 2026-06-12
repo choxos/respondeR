@@ -2,10 +2,24 @@
 % Please edit documentation in R/launch_app.R
 \name{launch_responder_analysis}
 \alias{launch_responder_analysis}
-\title{Launch Responder Analysis App}
+\title{Launch the Responder Analysis Shiny application}
 \usage{
-launch_responder_analysis()
+launch_responder_analysis(...)
+}
+\arguments{
+\item{...}{Additional arguments passed to \code{\link[shiny:runApp]{shiny::runApp()}}.}
+}
+\value{
+Called for its side effect of launching the app; invisibly returns
+the value of \code{\link[shiny:runApp]{shiny::runApp()}}.
 }
 \description{
-This function launches the Responder Analysis Shiny application.
+Starts the bundled Shiny application, a point-and-click front end to
+\code{\link[=responder_analysis]{responder_analysis()}}: upload data (or load the example), set the MID and
+direction of benefit, and view, plot and download the results.
+}
+\examples{
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+launch_responder_analysis()
+\dontshow{\}) # examplesIf}
 }
