@@ -18,3 +18,5 @@
 ^audit$
 ^node_modules$
 ^dist$
+^inst/future$
+^respondeR_.*\.tar\.gz$

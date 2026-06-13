@@ -14,3 +14,11 @@ dist
 # shinyapps.io deploy metadata (account/app IDs; not needed in the repo)
 rsconnect/
 audit/
+
+# local prototype code for future releases (not shipped, not tracked)
+inst/future/
+
+# build artifacts
+*.tar.gz
+*.Rcheck/
+*.xlsx
