@@ -13,6 +13,7 @@
 ^CRAN-SUBMISSION$
 ^README\.Rmd$
 ^\.DS_Store$
+^\.git$
 ^\.gstack$
 ^\.vscode$
 ^audit$

@@ -101,3 +101,5 @@ from that app; the individual and median point estimates are unchanged.
   anchors, edge cases and every method.
 * A **pkgdown** website, methodology and getting-started vignettes, and a hex
   logo.
+* A startup message on `library(respondeR)` noting the installed version, the
+  `responder_analysis()` entry point and the project links.
