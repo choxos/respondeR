@@ -3,6 +3,9 @@
 ``` r
 
 library(respondeR)
+#> respondeR 0.1.0: impute responder proportions from continuous outcomes.
+#> Analyze arm summaries with responder_analysis(); launch the app with launch_responder_analysis().
+#> Docs: https://choxos.github.io/respondeR/ | GitHub: https://github.com/choxos/respondeR
 ```
 
 ## The idea

@@ -119,3 +119,8 @@ estimates are unchanged.
   regression anchors, edge cases and every method.
 - A **pkgdown** website, methodology and getting-started vignettes, and
   a hex logo.
+- A startup message on
+  [`library(respondeR)`](https://github.com/choxos/respondeR) noting the
+  installed version, the
+  [`responder_analysis()`](https://choxos.github.io/respondeR/reference/responder_analysis.md)
+  entry point and the project links.
